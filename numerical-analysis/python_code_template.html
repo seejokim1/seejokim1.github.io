@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Code Template — 수치해석 / 경국대학교</title>
+<style>
+:root {
+  --bg: #1e1e1e; --border: #3c3c3c; --header-bg: #252526;
+  --text: #d4d4d4; --linenum: #858585;
+  --kw: #569cd6; --str: #ce9178; --cmt: #6a9955;
+  --num: #b5cea8; --fn: #dcdcaa;
+  --accent: #007acc; --green: #4caf50;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #0d0d0d;
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  padding: 32px 20px;
+  line-height: 1.6;
+}
+.wrap { max-width: 900px; margin: 0 auto; }
+
+/* ── 상단 배너 ─────────────────────────────── */
+.banner {
+  background: linear-gradient(135deg,#0e639c,#16825d);
+  border-radius: 10px; padding: 24px 28px; margin-bottom: 28px;
+}
+.banner h1 { font-size: 1.5rem; color: #fff; font-weight: 700; }
+.banner p  { color: rgba(255,255,255,.75); font-size: .9rem; margin-top: 5px; }
+.badge {
+  display: inline-block; margin-top: 10px; margin-right: 6px;
+  background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
+  border-radius: 20px; padding: 2px 12px; font-size: .75rem; color: #fff;
+}
+
+/* ── PDF 경고 배너 ──────────────────────────── */
+.pdf-warning {
+  background: #2d1a00; border: 1px solid #c67600;
+  border-radius: 8px; padding: 14px 18px; margin-bottom: 24px;
+  font-size: .88rem; color: #ffc44d;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.pdf-warning .icon { font-size: 1.3rem; flex-shrink: 0; }
+.pdf-warning strong { color: #ffdd88; display: block; margin-bottom: 4px; }
+
+/* ── 섹션 제목 ──────────────────────────────── */
+.sec-title {
+  font-size: 1rem; font-weight: 600; color: #bbb;
+  border-left: 3px solid var(--accent); padding-left: 10px;
+  margin: 28px 0 12px;
+}
+
+/* ── 코드 박스 ──────────────────────────────── */
+.code-box {
+  border: 1px solid var(--border); border-radius: 8px;
+  overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,.5);
+  margin-bottom: 6px;
+}
+
+/* 헤더 바 */
+.code-head {
+  background: var(--header-bg);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 12px; border-bottom: 1px solid var(--border);
+  gap: 10px;
+}
+.code-head-left { display: flex; align-items: center; gap: 8px; }
+.lang-tag {
+  background: #0e639c; color: #fff;
+  font-size: .72rem; font-family: monospace; font-weight: 700;
+  padding: 1px 8px; border-radius: 3px;
+}
+.code-fname { font-size: .8rem; color: #999; font-family: monospace; }
+
+/* 복사 버튼 */
+.copy-btn {
+  display: flex; align-items: center; gap: 5px;
+  background: #3c3c3c; border: 1px solid #555; color: #ccc;
+  border-radius: 5px; padding: 4px 12px; font-size: .78rem;
+  cursor: pointer; transition: all .18s; white-space: nowrap;
+  font-family: 'Segoe UI', sans-serif;
+}
+.copy-btn:hover { background: #4e4e4e; color: #fff; border-color: #888; }
+.copy-btn.ok    { background: #1a3a1a; border-color: var(--green); color: var(--green); }
+
+/* 코드 영역 */
+.code-body {
+  display: flex; background: var(--bg);
+  overflow-x: auto;
+}
+.ln {
+  background: #1a1a1a; color: var(--linenum);
+  font-family: 'Cascadia Code','Consolas','Fira Code',monospace;
+  font-size: .82rem; line-height: 1.65;
+  padding: 12px 10px 12px 14px;
+  text-align: right; user-select: none;
+  border-right: 1px solid #2a2a2a; flex-shrink: 0; min-width: 44px;
+}
+.ln span { display: block; }
+pre.code {
+  flex: 1; margin: 0; padding: 12px 18px;
+  background: transparent; color: var(--text);
+  font-family: 'Cascadia Code','Consolas','Fira Code',monospace;
+  font-size: .82rem; line-height: 1.65;
+  white-space: pre; tab-size: 4;
+}
+
+/* 신택스 컬러 */
+.kw { color: var(--kw);  font-weight: 600; }
+.st { color: var(--str); }
+.cm { color: var(--cmt); font-style: italic; }
+.nm { color: var(--num); }
+.fn { color: var(--fn);  }
+
+/* 탭 */
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; }
+.tab {
+  background: #2a2a2a; border: 1px solid #444; color: #999;
+  padding: 6px 16px; border-radius: 6px; cursor: pointer;
+  font-size: .82rem; transition: all .18s;
+}
+.tab.active, .tab:hover {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+}
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* 토스트 */
+#toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(60px);
+  background: #111; border: 1px solid var(--green);
+  color: var(--green); padding: 10px 22px; border-radius: 8px;
+  font-size: .85rem; transition: transform .28s;
+  box-shadow: 0 4px 18px rgba(0,0,0,.6); z-index: 999;
+  pointer-events: none;
+}
+#toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- 배너 -->
+<div class="banner">
+  <h1>🐍 Python Code Template</h1>
+  <p>수치해석 강의 코드 예제 — 경국대학교 전자기계융합공학부 로봇공학전공</p>
+  <span class="badge">Prof. See Jo Kim</span>
+  <span class="badge">Numerical Analysis</span>
+</div>
+
+<!-- PDF 경고 -->
+<div class="pdf-warning">
+  <div class="icon">⚠️</div>
+  <div>
+    <strong>PDF에서는 복사 버튼이 동작하지 않습니다</strong>
+    PDF는 정적 문서 형식이라 JavaScript 버튼이 작동하지 않습니다.<br>
+    👉 <strong>이 HTML 파일을 Chrome/Edge에서 열고</strong>
+    각 코드 블록 우측 상단의 <strong>📋 Copy 버튼</strong>을 클릭하세요.<br>
+    복사 후 Google Colab 또는 VS Code에 <strong>Ctrl+V</strong> 로 붙여넣기
+  </div>
+</div>
+
+<!-- 탭 -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab(0,this)">① Simpson's Rule</button>
+  <button class="tab"        onclick="switchTab(1,this)">② Euler / RK4</button>
+  <button class="tab"        onclick="switchTab(2,this)">③ Gaussian Elimination</button>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 패널 1: Simpson                           -->
+<!-- ══════════════════════════════════════════ -->
+<div class="panel active" id="p0">
+  <div class="sec-title">수치 적분 — Simpson's 1/3 Rule</div>
+  <div class="code-box">
+    <div class="code-head">
+      <div class="code-head-left">
+        <span class="lang-tag">Python</span>
+        <span class="code-fname">simpson.py</span>
+      </div>
+      <button class="copy-btn" id="btn0" onclick="doCopy('raw0','btn0')">📋 Copy</button>
+    </div>
+    <div class="code-body">
+      <div class="ln" id="ln0"></div>
+      <pre class="code" id="disp0"><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+<span class="kw">def</span> <span class="fn">simpsons_rule</span>(f, a, b, n):
+    <span class="st">"""
+    Simpson's 1/3 Rule for numerical integration
+    Parameters:
+        f : integrand function
+        a : lower limit
+        b : upper limit
+        n : number of subintervals (must be even)
+    """</span>
+    <span class="kw">if</span> n % <span class="nm">2</span> != <span class="nm">0</span>:
+        <span class="kw">raise</span> ValueError(<span class="st">"n must be even for Simpson's rule"</span>)
+
+    h      = (b - a) / n
+    x      = np.<span class="fn">linspace</span>(a, b, n + <span class="nm">1</span>)
+    y      = f(x)
+
+    <span class="cm"># Simpson's coefficients: 1, 4, 2, 4, ..., 4, 1</span>
+    coeffs = np.<span class="fn">ones</span>(n + <span class="nm">1</span>)
+    coeffs[<span class="nm">1</span>:<span class="nm">-1</span>:<span class="nm">2</span>] = <span class="nm">4</span>   <span class="cm"># odd  indices</span>
+    coeffs[<span class="nm">2</span>:<span class="nm">-2</span>:<span class="nm">2</span>] = <span class="nm">2</span>   <span class="cm"># even indices</span>
+
+    <span class="kw">return</span> (h / <span class="nm">3</span>) * np.<span class="fn">dot</span>(coeffs, y)
+
+<span class="cm"># --- Test: integral of sin(x) from 0 to pi ---</span>
+f      = <span class="kw">lambda</span> x: np.<span class="fn">sin</span>(x)
+result = <span class="fn">simpsons_rule</span>(f, <span class="nm">0</span>, np.pi, <span class="nm">100</span>)
+exact  = <span class="nm">2.0</span>
+
+<span class="fn">print</span>(<span class="kw">f</span><span class="st">"Numerical : {result:.10f}"</span>)
+<span class="fn">print</span>(<span class="kw">f</span><span class="st">"Exact     : {exact:.10f}"</span>)
+<span class="fn">print</span>(<span class="kw">f</span><span class="st">"Error     : {abs(result - exact):.2e}"</span>)
+
+<span class="cm"># --- Visualization ---</span>
+x_plot = np.<span class="fn">linspace</span>(<span class="nm">0</span>, np.pi, <span class="nm">300</span>)
+plt.<span class="fn">figure</span>(figsize=(<span class="nm">8</span>, <span class="nm">4</span>))
+plt.<span class="fn">fill_between</span>(x_plot, f(x_plot), alpha=<span class="nm">0.3</span>, label=<span class="st">'Area'</span>)
+plt.<span class="fn">plot</span>(x_plot, f(x_plot), <span class="st">'b-'</span>, lw=<span class="nm">2</span>, label=<span class="st">r'$\sin(x)$'</span>)
+plt.<span class="fn">xlabel</span>(<span class="st">'x'</span>);  plt.<span class="fn">ylabel</span>(<span class="st">'f(x)'</span>)
+plt.<span class="fn">title</span>(<span class="st">"Simpson's Rule Integration"</span>)
+plt.<span class="fn">legend</span>();  plt.<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="nm">0.3</span>)
+plt.<span class="fn">tight_layout</span>();  plt.<span class="fn">show</span>()</pre>
+    </div>
+  </div>
+  <!-- 실제 복사될 순수 텍스트 (숨김) -->
+  <textarea id="raw0" style="display:none">import numpy as np
+import matplotlib.pyplot as plt
+
+def simpsons_rule(f, a, b, n):
+    """
+    Simpson's 1/3 Rule for numerical integration
+    Parameters:
+        f : integrand function
+        a : lower limit
+        b : upper limit
+        n : number of subintervals (must be even)
+    """
+    if n % 2 != 0:
+        raise ValueError("n must be even for Simpson's rule")
+
+    h      = (b - a) / n
+    x      = np.linspace(a, b, n + 1)
+    y      = f(x)
+
+    # Simpson's coefficients: 1, 4, 2, 4, ..., 4, 1
+    coeffs = np.ones(n + 1)
+    coeffs[1:-1:2] = 4   # odd  indices
+    coeffs[2:-2:2] = 2   # even indices
+
+    return (h / 3) * np.dot(coeffs, y)
+
+# --- Test: integral of sin(x) from 0 to pi ---
+f      = lambda x: np.sin(x)
+result = simpsons_rule(f, 0, np.pi, 100)
+exact  = 2.0
+
+print(f"Numerical : {result:.10f}")
+print(f"Exact     : {exact:.10f}")
+print(f"Error     : {abs(result - exact):.2e}")
+
+# --- Visualization ---
+x_plot = np.linspace(0, np.pi, 300)
+plt.figure(figsize=(8, 4))
+plt.fill_between(x_plot, f(x_plot), alpha=0.3, label='Area')
+plt.plot(x_plot, f(x_plot), 'b-', lw=2, label=r'$\sin(x)$')
+plt.xlabel('x');  plt.ylabel('f(x)')
+plt.title("Simpson's Rule Integration")
+plt.legend();  plt.grid(True, alpha=0.3)
+plt.tight_layout();  plt.show()</textarea>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 패널 2: Euler / RK4                       -->
+<!-- ══════════════════════════════════════════ -->
+<div class="panel" id="p1">
+  <div class="sec-title">ODE — Euler vs Runge-Kutta 4th Order</div>
+  <div class="code-box">
+    <div class="code-head">
+      <div class="code-head-left">
+        <span class="lang-tag">Python</span>
+        <span class="code-fname">ode_euler_rk4.py</span>
+      </div>
+      <button class="copy-btn" id="btn1" onclick="doCopy('raw1','btn1')">📋 Copy</button>
+    </div>
+    <div class="code-body">
+      <div class="ln" id="ln1"></div>
+      <pre class="code" id="disp1"><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+<span class="cm"># ODE: dy/dx = -2y,  y(0)=1,  exact: y = exp(-2x)</span>
+<span class="kw">def</span> <span class="fn">f</span>(x, y):
+    <span class="kw">return</span> -<span class="nm">2</span> * y
+
+<span class="kw">def</span> <span class="fn">euler</span>(f, x0, y0, x_end, h):
+    <span class="st">"""Forward Euler method"""</span>
+    xs, ys = [x0], [y0]
+    <span class="kw">while</span> xs[-<span class="nm">1</span>] &lt; x_end - <span class="nm">1e-12</span>:
+        xs.<span class="fn">append</span>(xs[-<span class="nm">1</span>] + h)
+        ys.<span class="fn">append</span>(ys[-<span class="nm">1</span>] + h * f(xs[-<span class="nm">2</span>], ys[-<span class="nm">2</span>]))
+    <span class="kw">return</span> np.<span class="fn">array</span>(xs), np.<span class="fn">array</span>(ys)
+
+<span class="kw">def</span> <span class="fn">rk4</span>(f, x0, y0, x_end, h):
+    <span class="st">"""4th-order Runge-Kutta method"""</span>
+    xs, ys = [x0], [y0]
+    <span class="kw">while</span> xs[-<span class="nm">1</span>] &lt; x_end - <span class="nm">1e-12</span>:
+        x, y = xs[-<span class="nm">1</span>], ys[-<span class="nm">1</span>]
+        k1 = f(x,         y)
+        k2 = f(x + h/<span class="nm">2</span>,  y + h/<span class="nm">2</span> * k1)
+        k3 = f(x + h/<span class="nm">2</span>,  y + h/<span class="nm">2</span> * k2)
+        k4 = f(x + h,     y + h   * k3)
+        xs.<span class="fn">append</span>(x + h)
+        ys.<span class="fn">append</span>(y + h/<span class="nm">6</span> * (k1 + <span class="nm">2</span>*k2 + <span class="nm">2</span>*k3 + k4))
+    <span class="kw">return</span> np.<span class="fn">array</span>(xs), np.<span class="fn">array</span>(ys)
+
+h = <span class="nm">0.2</span>
+xe, ye = <span class="fn">euler</span>(f, <span class="nm">0</span>, <span class="nm">1</span>, <span class="nm">2</span>, h)
+xr, yr = <span class="fn">rk4</span>  (f, <span class="nm">0</span>, <span class="nm">1</span>, <span class="nm">2</span>, h)
+x_ex   = np.<span class="fn">linspace</span>(<span class="nm">0</span>, <span class="nm">2</span>, <span class="nm">200</span>)
+
+<span class="fn">print</span>(<span class="kw">f</span><span class="st">"{'x':&gt;5} {'Euler':&gt;10} {'RK4':&gt;10} {'Exact':&gt;10}"</span>)
+<span class="fn">print</span>(<span class="st">"-"</span> * <span class="nm">40</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(xe)):
+    ex = np.<span class="fn">exp</span>(-<span class="nm">2</span> * xe[i])
+    <span class="fn">print</span>(<span class="kw">f</span><span class="st">f"{xe[i]:&gt;5.2f} {ye[i]:&gt;10.6f} {yr[i]:&gt;10.6f} {ex:&gt;10.6f}"</span>)
+
+plt.<span class="fn">figure</span>(figsize=(<span class="nm">9</span>, <span class="nm">4</span>))
+plt.<span class="fn">plot</span>(x_ex, np.<span class="fn">exp</span>(-<span class="nm">2</span>*x_ex), <span class="st">'k-'</span>,   lw=<span class="nm">2</span>, label=<span class="st">'Exact'</span>)
+plt.<span class="fn">plot</span>(xe,   ye,               <span class="st">'r--o'</span>, ms=<span class="nm">5</span>, label=<span class="st">'Euler'</span>)
+plt.<span class="fn">plot</span>(xr,   yr,               <span class="st">'b--s'</span>, ms=<span class="nm">5</span>, label=<span class="st">'RK4'</span>)
+plt.<span class="fn">xlabel</span>(<span class="st">'x'</span>);  plt.<span class="fn">ylabel</span>(<span class="st">'y'</span>)
+plt.<span class="fn">title</span>(<span class="st">r"ODE $dy/dx=-2y$ --- Euler vs RK4 ($h=0.2$)"</span>)
+plt.<span class="fn">legend</span>();  plt.<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="nm">0.3</span>)
+plt.<span class="fn">tight_layout</span>();  plt.<span class="fn">show</span>()</pre>
+    </div>
+  </div>
+  <textarea id="raw1" style="display:none">import numpy as np
+import matplotlib.pyplot as plt
+
+# ODE: dy/dx = -2y,  y(0)=1,  exact: y = exp(-2x)
+def f(x, y):
+    return -2 * y
+
+def euler(f, x0, y0, x_end, h):
+    """Forward Euler method"""
+    xs, ys = [x0], [y0]
+    while xs[-1] < x_end - 1e-12:
+        xs.append(xs[-1] + h)
+        ys.append(ys[-1] + h * f(xs[-2], ys[-2]))
+    return np.array(xs), np.array(ys)
+
+def rk4(f, x0, y0, x_end, h):
+    """4th-order Runge-Kutta method"""
+    xs, ys = [x0], [y0]
+    while xs[-1] < x_end - 1e-12:
+        x, y = xs[-1], ys[-1]
+        k1 = f(x,        y)
+        k2 = f(x + h/2,  y + h/2 * k1)
+        k3 = f(x + h/2,  y + h/2 * k2)
+        k4 = f(x + h,    y + h   * k3)
+        xs.append(x + h)
+        ys.append(y + h/6 * (k1 + 2*k2 + 2*k3 + k4))
+    return np.array(xs), np.array(ys)
+
+h = 0.2
+xe, ye = euler(f, 0, 1, 2, h)
+xr, yr = rk4  (f, 0, 1, 2, h)
+x_ex   = np.linspace(0, 2, 200)
+
+print(f"{'x':>5} {'Euler':>10} {'RK4':>10} {'Exact':>10}")
+print("-" * 40)
+for i in range(len(xe)):
+    ex = np.exp(-2 * xe[i])
+    print(f"{xe[i]:>5.2f} {ye[i]:>10.6f} {yr[i]:>10.6f} {ex:>10.6f}")
+
+plt.figure(figsize=(9, 4))
+plt.plot(x_ex, np.exp(-2*x_ex), 'k-',   lw=2, label='Exact')
+plt.plot(xe,   ye,               'r--o', ms=5, label='Euler')
+plt.plot(xr,   yr,               'b--s', ms=5, label='RK4')
+plt.xlabel('x');  plt.ylabel('y')
+plt.title(r"ODE $dy/dx=-2y$ --- Euler vs RK4 ($h=0.2$)")
+plt.legend();  plt.grid(True, alpha=0.3)
+plt.tight_layout();  plt.show()</textarea>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 패널 3: Gaussian                          -->
+<!-- ══════════════════════════════════════════ -->
+<div class="panel" id="p2">
+  <div class="sec-title">선형 방정식 — Gaussian Elimination (Partial Pivoting)</div>
+  <div class="code-box">
+    <div class="code-head">
+      <div class="code-head-left">
+        <span class="lang-tag">Python</span>
+        <span class="code-fname">gaussian.py</span>
+      </div>
+      <button class="copy-btn" id="btn2" onclick="doCopy('raw2','btn2')">📋 Copy</button>
+    </div>
+    <div class="code-body">
+      <div class="ln" id="ln2"></div>
+      <pre class="code" id="disp2"><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> <span class="fn">gaussian_elimination</span>(A, b):
+    <span class="st">"""Solve Ax = b using Gaussian elimination + partial pivoting."""</span>
+    n  = <span class="fn">len</span>(b)
+    Ab = np.<span class="fn">hstack</span>([A.<span class="fn">astype</span>(<span class="fn">float</span>),
+                    b.<span class="fn">reshape</span>(-<span class="nm">1</span>, <span class="nm">1</span>).<span class="fn">astype</span>(<span class="fn">float</span>)])
+
+    <span class="kw">for</span> col <span class="kw">in</span> <span class="fn">range</span>(n):
+        <span class="cm"># Partial Pivoting</span>
+        max_row = col + np.<span class="fn">argmax</span>(<span class="fn">abs</span>(Ab[col:, col]))
+        Ab[[col, max_row]] = Ab[[max_row, col]]
+
+        <span class="kw">if</span> <span class="fn">abs</span>(Ab[col, col]) &lt; <span class="nm">1e-12</span>:
+            <span class="kw">raise</span> ValueError(<span class="st">"Singular matrix"</span>)
+
+        <span class="cm"># Forward Elimination</span>
+        <span class="kw">for</span> row <span class="kw">in</span> <span class="fn">range</span>(col + <span class="nm">1</span>, n):
+            fac        = Ab[row, col] / Ab[col, col]
+            Ab[row, :] -= fac * Ab[col, :]
+
+    <span class="cm"># Back Substitution</span>
+    x = np.<span class="fn">zeros</span>(n)
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n - <span class="nm">1</span>, -<span class="nm">1</span>, -<span class="nm">1</span>):
+        x[i] = (Ab[i, -<span class="nm">1</span>] - np.<span class="fn">dot</span>(Ab[i, i+<span class="nm">1</span>:n], x[i+<span class="nm">1</span>:])) / Ab[i, i]
+    <span class="kw">return</span> x
+
+<span class="cm"># --- Test ---</span>
+A = np.<span class="fn">array</span>([[ <span class="nm">2</span>,  <span class="nm">1</span>, -<span class="nm">1</span>],
+              [-<span class="nm">3</span>, -<span class="nm">1</span>,  <span class="nm">2</span>],
+              [-<span class="nm">2</span>,  <span class="nm">1</span>,  <span class="nm">2</span>]], dtype=<span class="fn">float</span>)
+b = np.<span class="fn">array</span>([<span class="nm">8</span>, -<span class="nm">11</span>, -<span class="nm">3</span>], dtype=<span class="fn">float</span>)
+
+x     = <span class="fn">gaussian_elimination</span>(A, b)
+x_ref = np.linalg.<span class="fn">solve</span>(A, b)
+
+<span class="fn">print</span>(<span class="kw">f</span><span class="st">"Solution (custom) : {x}"</span>)
+<span class="fn">print</span>(<span class="kw">f</span><span class="st">"Solution (numpy)  : {x_ref}"</span>)
+<span class="fn">print</span>(<span class="kw">f</span><span class="st">"||Ax - b||        : {np.linalg.norm(A @ x - b):.2e}"</span>)</pre>
+    </div>
+  </div>
+  <textarea id="raw2" style="display:none">import numpy as np
+
+def gaussian_elimination(A, b):
+    """Solve Ax = b using Gaussian elimination + partial pivoting."""
+    n  = len(b)
+    Ab = np.hstack([A.astype(float),
+                    b.reshape(-1, 1).astype(float)])
+
+    for col in range(n):
+        # Partial Pivoting
+        max_row = col + np.argmax(abs(Ab[col:, col]))
+        Ab[[col, max_row]] = Ab[[max_row, col]]
+
+        if abs(Ab[col, col]) < 1e-12:
+            raise ValueError("Singular matrix")
+
+        # Forward Elimination
+        for row in range(col + 1, n):
+            fac        = Ab[row, col] / Ab[col, col]
+            Ab[row, :] -= fac * Ab[col, :]
+
+    # Back Substitution
+    x = np.zeros(n)
+    for i in range(n - 1, -1, -1):
+        x[i] = (Ab[i, -1] - np.dot(Ab[i, i+1:n], x[i+1:])) / Ab[i, i]
+    return x
+
+# --- Test ---
+A = np.array([[ 2,  1, -1],
+              [-3, -1,  2],
+              [-2,  1,  2]], dtype=float)
+b = np.array([8, -11, -3], dtype=float)
+
+x     = gaussian_elimination(A, b)
+x_ref = np.linalg.solve(A, b)
+
+print(f"Solution (custom) : {x}")
+print(f"Solution (numpy)  : {x_ref}")
+print(f"||Ax - b||        : {np.linalg.norm(A @ x - b):.2e}")</textarea>
+</div>
+
+</div><!-- .wrap -->
+
+<!-- 토스트 -->
+<div id="toast">✅ 클립보드에 복사됨 — Ctrl+V 로 붙여넣기</div>
+
+<script>
+// ── 탭 전환 ────────────────────────────────
+function switchTab(idx, btn) {
+  document.querySelectorAll('.panel').forEach((p,i) =>
+    p.classList.toggle('active', i === idx));
+  document.querySelectorAll('.tab').forEach((b,i) =>
+    b.classList.toggle('active', i === idx));
+  buildLineNums();
+}
+
+// ── 줄번호 생성 ─────────────────────────────
+function buildLineNums() {
+  [0,1,2].forEach(i => {
+    const pre = document.getElementById('disp' + i);
+    const ln  = document.getElementById('ln'   + i);
+    if (!pre || !ln) return;
+    // innerText 줄 수 기준
+    const n = pre.innerText.split('\n').length;
+    ln.innerHTML = Array.from({length: n}, (_, j) =>
+      '<span>' + (j + 1) + '</span>').join('');
+  });
+}
+
+// ── 복사 버튼 ───────────────────────────────
+function doCopy(rawId, btnId) {
+  const text = document.getElementById(rawId).value;
+  const btn  = document.getElementById(btnId);
+
+  navigator.clipboard.writeText(text)
+    .then(() => showSuccess(btn))
+    .catch(() => {
+      // fallback
+      const ta = Object.assign(document.createElement('textarea'),
+        { value: text, style: 'position:fixed;opacity:0' });
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showSuccess(btn);
+    });
+}
+
+function showSuccess(btn) {
+  const orig = btn.textContent;
+  btn.textContent = '✅ Copied!';
+  btn.classList.add('ok');
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => {
+    btn.textContent = orig;
+    btn.classList.remove('ok');
+    toast.classList.remove('show');
+  }, 2500);
+}
+
+// ── 초기화 ──────────────────────────────────
+window.addEventListener('load', buildLineNums);
+</script>
+</body>
+</html>
