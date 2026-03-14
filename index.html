@@ -2,27 +2,23 @@
 <html lang="en">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<meta charset="UTF-8">
 <title>Engineering Academy</title>
 
 <style>
 
 body{
-font-family:Arial, Helvetica, sans-serif;
+font-family:Arial;
 margin:0;
 background:#f4f6f9;
-line-height:1.6;
 }
-
-/* HEADER */
 
 header{
 background:#1865F2;
 color:white;
 text-align:center;
-padding:40px 20px;
+padding:40px;
 }
 
 header h1{
@@ -34,8 +30,6 @@ header p{
 margin:10px;
 }
 
-/* NAV */
-
 nav{
 background:white;
 text-align:center;
@@ -44,7 +38,7 @@ box-shadow:0 2px 5px rgba(0,0,0,0.1);
 }
 
 nav a{
-margin:15px;
+margin:20px;
 text-decoration:none;
 font-weight:bold;
 color:#333;
@@ -54,8 +48,6 @@ nav a:hover{
 color:#1865F2;
 }
 
-/* MAIN CONTAINER */
-
 .container{
 width:90%;
 max-width:1200px;
@@ -63,11 +55,9 @@ margin:auto;
 margin-top:40px;
 }
 
-/* COURSE GRID */
-
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+grid-template-columns:repeat(3,1fr);
 gap:25px;
 }
 
@@ -76,30 +66,25 @@ background:white;
 padding:30px;
 border-radius:12px;
 box-shadow:0 5px 15px rgba(0,0,0,0.1);
-transition:transform 0.2s;
+transition:0.2s;
 }
 
 .card:hover{
 transform:scale(1.05);
 }
 
-.card h3{
-margin-top:0;
-}
-
-/* VIDEO SECTION */
-
 .video{
-margin-top:60px;
+margin-top:40px;
 text-align:center;
 }
 
-.video iframe{
-max-width:100%;
-border-radius:8px;
+.video-grid{
+display:flex;
+gap:30px;
+justify-content:center;
+flex-wrap:wrap;
+margin-top:20px;
 }
-
-/* FOOTER */
 
 footer{
 margin-top:80px;
@@ -107,13 +92,11 @@ background:#222;
 color:white;
 text-align:center;
 padding:30px;
-font-size:14px;
 }
 
 </style>
 
 </head>
-
 
 <body>
 
@@ -127,23 +110,23 @@ font-size:14px;
 
 </header>
 
-
 <nav>
 
 <a href="#">Home</a>
+
 <a href="#courses">Courses</a>
+
 <a href="#videos">Lectures</a>
 
-<a href="https://github.com/seejokim1" target="_blank">Python Codes</a>
+<a href="https://github.com/seejokim1">Python Codes</a>
 
-<a href="https://scholar.google.com/citations?user=F7zQCZsAAAAJ" target="_blank">Research</a>
+<a href="https://scholar.google.com/citations?user=F7zQCZsAAAAJ">Research</a>
 
-<a href="https://www.youtube.com" target="_blank">YouTube</a>
+<a href="https://youtube.com/@EngineeringWithProfKim">YouTube</a>
 
 </nav>
 
-
-<main class="container">
+<div class="container">
 
 <h2 id="courses">Courses</h2>
 
@@ -155,10 +138,9 @@ font-size:14px;
 
 <p>Python based numerical methods</p>
 
-<a href="https://github.com/seejokim1" target="_blank">Course materials</a>
+<a href="https://github.com/seejokim1">Course materials</a>
 
 </div>
-
 
 <div class="card">
 
@@ -169,7 +151,6 @@ font-size:14px;
 <a href="#">Lecture notes</a>
 
 </div>
-
 
 <div class="card">
 
@@ -188,25 +169,31 @@ font-size:14px;
 
 <h2>Lecture Videos</h2>
 
-<iframe width="700" height="400"
-src="https://www.youtube.com/embed/videoseries?list=PLiI2tT-2yuuC-q7CdSyjtJwe23DUuMpjv"
-title="Engineering Academy Playlist"
+<div class="video-grid">
+
+<iframe width="500" height="280"
+src="https://www.youtube.com/embed/25ctQJtZRbg"
 frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+allowfullscreen>
+</iframe>
+
+<iframe width="500" height="280"
+src="https://www.youtube.com/embed/3hvtFpNsocM"
+frameborder="0"
 allowfullscreen>
 </iframe>
 
 </div>
 
-</main>
+</div>
 
+</div>
 
 <footer>
 
 <p>Engineering Academy © Prof. See Jo Kim</p>
 
 </footer>
-
 
 </body>
 
