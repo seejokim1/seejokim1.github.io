@@ -1,12 +1,73 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <meta charset="utf-8">
 
 <title>Engineering Academy</title>
 
-<link rel="stylesheet" href="style.css">
+<style>
+
+body{
+font-family:Arial;
+margin:0;
+background:#f5f7fa;
+}
+
+header{
+background:#1865f2;
+color:white;
+padding:30px;
+text-align:center;
+}
+
+nav{
+background:white;
+padding:15px;
+text-align:center;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+nav a{
+margin:15px;
+text-decoration:none;
+color:#333;
+font-weight:bold;
+}
+
+.container{
+width:90%;
+max-width:1100px;
+margin:auto;
+margin-top:40px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:25px;
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:10px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
+}
+
+.card:hover{
+transform:scale(1.03);
+}
+
+footer{
+text-align:center;
+margin-top:60px;
+padding:20px;
+color:#777;
+}
+
+</style>
 
 </head>
 
@@ -23,59 +84,50 @@
 </header>
 
 
-<section class="courses">
+<nav>
+
+<a href="#">Home</a>
+<a href="#">Courses</a>
+<a href="#">Lectures</a>
+<a href="https://github.com/seejokim1">Python Codes</a>
+<a href="#">YouTube</a>
+<a href="https://scholar.google.com/citations?user=F7zQCZsAAAAJ">Research</a>
+<a href="#">About</a>
+
+</nav>
+
+
+<div class="container">
 
 <h2>Courses</h2>
 
-<div class="course-grid">
+<div class="grid">
 
-<a href="courses/numerical_analysis.html" class="card">
+<div class="card">
 <h3>Numerical Analysis</h3>
 <p>Python based numerical methods</p>
-</a>
+</div>
 
-<a href="courses/cfd.html" class="card">
+<div class="card">
 <h3>Computational Fluid Dynamics</h3>
 <p>CFD theory and simulations</p>
-</a>
+</div>
 
-<a href="courses/robotics.html" class="card">
+<div class="card">
 <h3>Robotics</h3>
 <p>ROS and autonomous systems</p>
-</a>
+</div>
 
 </div>
 
-</section>
+</div>
 
+<footer>
 
-<section>
+<p>© Engineering Academy - Prof. See Jo Kim</p>
 
-<h2>External Resources</h2>
-
-<ul>
-
-<li>
-<a href="https://github.com/seejokim1">
-GitHub Lecture Codes
-</a>
-</li>
-
-<li>
-<a href="https://scholar.google.com/citations?user=F7zQCZsAAAAJ">
-Google Scholar
-</a>
-</li>
-
-<li>
-<a href="#">
-YouTube Lectures
-</a>
-</li>
-
-</ul>
-
-</section>
+</footer>
 
 </body>
+
 </html>
