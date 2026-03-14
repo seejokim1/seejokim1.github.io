@@ -4,41 +4,51 @@
 <head>
 
 <meta charset="UTF-8">
-<title>Engineering Academy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Engineering Academy | Prof. See Jo Kim</title>
 
 <style>
 
+/* GLOBAL */
+
 body{
-font-family:Arial;
+font-family:Arial, Helvetica, sans-serif;
 margin:0;
 background:#f4f6f9;
+color:#333;
 }
+
+/* HEADER */
 
 header{
 background:#1865F2;
 color:white;
 text-align:center;
-padding:40px;
+padding:60px 20px;
 }
 
 header h1{
 margin:0;
-font-size:42px;
+font-size:44px;
 }
 
 header p{
-margin:10px;
+margin-top:10px;
+font-size:18px;
 }
+
+/* NAV */
 
 nav{
 background:white;
 text-align:center;
 padding:15px;
-box-shadow:0 2px 5px rgba(0,0,0,0.1);
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
 }
 
 nav a{
-margin:20px;
+margin:0 18px;
 text-decoration:none;
 font-weight:bold;
 color:#333;
@@ -48,33 +58,71 @@ nav a:hover{
 color:#1865F2;
 }
 
+/* HERO */
+
+.hero{
+text-align:center;
+padding:60px 20px;
+}
+
+.hero h2{
+font-size:32px;
+margin-bottom:10px;
+}
+
+.hero p{
+font-size:18px;
+color:#666;
+}
+
+/* CONTAINER */
+
 .container{
 width:90%;
 max-width:1200px;
 margin:auto;
-margin-top:40px;
 }
+
+/* COURSE GRID */
 
 .grid{
 display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:25px;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:30px;
+margin-top:40px;
 }
+
+/* CARD */
 
 .card{
 background:white;
 padding:30px;
 border-radius:12px;
 box-shadow:0 5px 15px rgba(0,0,0,0.1);
-transition:0.2s;
+transition:0.25s;
+text-align:center;
 }
 
 .card:hover{
-transform:scale(1.05);
+transform:translateY(-5px);
 }
 
+/* BUTTON */
+
+.button{
+display:inline-block;
+margin-top:15px;
+padding:10px 18px;
+background:#1865F2;
+color:white;
+text-decoration:none;
+border-radius:6px;
+}
+
+/* VIDEO */
+
 .video{
-margin-top:40px;
+margin-top:80px;
 text-align:center;
 }
 
@@ -86,12 +134,14 @@ flex-wrap:wrap;
 margin-top:20px;
 }
 
+/* FOOTER */
+
 footer{
 margin-top:80px;
 background:#222;
 color:white;
 text-align:center;
-padding:30px;
+padding:40px;
 }
 
 </style>
@@ -112,19 +162,22 @@ padding:30px;
 
 <nav>
 
-<a href="#">Home</a>
-
+<a href="/">Home</a>
 <a href="#courses">Courses</a>
-
 <a href="#videos">Lectures</a>
-
-<a href="https://github.com/seejokim1">Python Codes</a>
-
+<a href="https://github.com/seejokim1">GitHub</a>
 <a href="https://scholar.google.com/citations?user=F7zQCZsAAAAJ">Research</a>
-
 <a href="https://youtube.com/@EngineeringWithProfKim">YouTube</a>
 
 </nav>
+
+<section class="hero">
+
+<h2>Learn Engineering with Python and Simulation</h2>
+
+<p>Numerical Analysis • CFD • Robotics • AI Engineering</p>
+
+</section>
 
 <div class="container">
 
@@ -136,9 +189,9 @@ padding:30px;
 
 <h3>Numerical Analysis</h3>
 
-<p>Python based numerical methods</p>
+<p>Python-based numerical methods and scientific computing.</p>
 
-<a href="https://github.com/seejokim1">Course materials</a>
+<a class="button" href="numerical-analysis/">Open Course</a>
 
 </div>
 
@@ -146,9 +199,9 @@ padding:30px;
 
 <h3>Computational Fluid Dynamics</h3>
 
-<p>CFD theory and simulations</p>
+<p>CFD theory, simulation methods, and practical examples.</p>
 
-<a href="#">Lecture notes</a>
+<a class="button" href="cfd/">Open Course</a>
 
 </div>
 
@@ -156,14 +209,13 @@ padding:30px;
 
 <h3>Robotics</h3>
 
-<p>ROS and autonomous systems</p>
+<p>ROS, autonomous systems, and intelligent robotics.</p>
 
-<a href="#">Course materials</a>
-
-</div>
+<a class="button" href="robotics/">Open Course</a>
 
 </div>
 
+</div>
 
 <div class="video" id="videos">
 
@@ -196,5 +248,4 @@ allowfullscreen>
 </footer>
 
 </body>
-
 </html>
