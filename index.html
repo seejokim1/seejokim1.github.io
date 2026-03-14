@@ -1,71 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="utf-8">
-<title>Engineering Academy - Prof. See Jo Kim</title>
 
-<style>
+<title>Engineering Academy</title>
 
-body{
-font-family: Arial;
-margin:0;
-background:#f5f7fa;
-}
-
-header{
-background:#1e88e5;
-color:white;
-padding:40px;
-text-align:center;
-}
-
-header h1{
-margin:0;
-font-size:40px;
-}
-
-header p{
-font-size:18px;
-}
-
-.container{
-width:90%;
-max-width:1000px;
-margin:auto;
-margin-top:40px;
-}
-
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
-}
-
-.card{
-background:white;
-padding:25px;
-border-radius:10px;
-box-shadow:0 2px 8px rgba(0,0,0,0.1);
-}
-
-.card h2{
-margin-top:0;
-}
-
-.card a{
-text-decoration:none;
-color:#1e88e5;
-font-weight:bold;
-}
-
-footer{
-text-align:center;
-margin-top:60px;
-padding:20px;
-color:#666;
-}
-
-</style>
+<link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -75,49 +16,66 @@ color:#666;
 
 <h1>Engineering Academy</h1>
 
-<p>by Prof. See Jo Kim</p>
+<p>Prof. See Jo Kim</p>
 
 <p>Numerical Analysis | CFD | Robotics | AI</p>
 
 </header>
 
-<div class="container">
 
-<div class="grid">
+<section class="courses">
 
-<div class="card">
-<h2>Numerical Analysis Course</h2>
-<p>Lecture materials and Python codes.</p>
-<a href="https://github.com/seejokim1">Open Course</a>
-</div>
+<h2>Courses</h2>
 
-<div class="card">
-<h2>CFD Course</h2>
-<p>Computational Fluid Dynamics lectures.</p>
-<a href="#">Open Course</a>
-</div>
+<div class="course-grid">
 
-<div class="card">
-<h2>YouTube Lectures</h2>
-<p>Engineering lectures and tutorials.</p>
-<a href="#">Watch Lectures</a>
-</div>
+<a href="courses/numerical_analysis.html" class="card">
+<h3>Numerical Analysis</h3>
+<p>Python based numerical methods</p>
+</a>
 
-<div class="card">
-<h2>Research</h2>
-<p>CFD, Molecular Dynamics, and Robotics research.</p>
-<a href="https://scholar.google.com/citations?user=F7zQCZsAAAAJ">View Publications</a>
-</div>
+<a href="courses/cfd.html" class="card">
+<h3>Computational Fluid Dynamics</h3>
+<p>CFD theory and simulations</p>
+</a>
+
+<a href="courses/robotics.html" class="card">
+<h3>Robotics</h3>
+<p>ROS and autonomous systems</p>
+</a>
 
 </div>
 
-</div>
+</section>
 
-<footer>
 
-<p>© Prof. See Jo Kim</p>
+<section>
 
-</footer>
+<h2>External Resources</h2>
+
+<ul>
+
+<li>
+<a href="https://github.com/seejokim1">
+GitHub Lecture Codes
+</a>
+</li>
+
+<li>
+<a href="https://scholar.google.com/citations?user=F7zQCZsAAAAJ">
+Google Scholar
+</a>
+</li>
+
+<li>
+<a href="#">
+YouTube Lectures
+</a>
+</li>
+
+</ul>
+
+</section>
 
 </body>
 </html>
