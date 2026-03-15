@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="김시조 국립경국대학교: (구)국립안동대학교" />
+  <meta name="dcterms.date" content="2026-03-15" />
+  <title>파이썬을 이용한 알기쉬운 수치해석</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title"><strong>파이썬을 이용한 알기쉬운
+수치해석</strong></h1>
+<p class="author">김시조<br />
+국립경국대학교: (구)국립안동대학교</p>
+<p class="date">2026-03-15</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#파이썬의-이해" id="toc-파이썬의-이해">파이썬의
+이해</a></li>
+<li><a href="#비선형-방정식-구하기" id="toc-비선형-방정식-구하기">비선형
+방정식 구하기</a></li>
+<li><a href="#선형연립방정식-수치해법"
+id="toc-선형연립방정식-수치해법">선형연립방정식 수치해법</a></li>
+<li><a href="#수치미분-numerical-differentiation"
+id="toc-수치미분-numerical-differentiation">수치미분 (Numerical
+Differentiation)</a></li>
+<li><a href="#수치적분-numerical-integration"
+id="toc-수치적분-numerical-integration">수치적분 (Numerical
+Integration)</a></li>
+<li><a href="#수치-보간-interpolation"
+id="toc-수치-보간-interpolation">수치 보간 (Interpolation)</a></li>
+<li><a href="#수치-회귀-numerical-regression"
+id="toc-수치-회귀-numerical-regression">수치 회귀 (Numerical
+Regression)</a>
+<ul>
+<li><a href="#최소자승법에-의한-1차-다항식-근사"
+id="toc-최소자승법에-의한-1차-다항식-근사">최소자승법에 의한 1차 다항식
+근사</a>
+<ul>
+<li><a href="#통계적-개념-공분산과-분산"
+id="toc-통계적-개념-공분산과-분산">(통계적 개념: 공분산과 분산</a></li>
+<li><a href="#선형-회귀의-스칼라-방식의-수학적-접근"
+id="toc-선형-회귀의-스칼라-방식의-수학적-접근">선형 회귀의 스칼라 방식의
+수학적 접근</a></li>
+<li><a href="#선형-회귀의-행렬-방식에-의한-수학적-접근"
+id="toc-선형-회귀의-행렬-방식에-의한-수학적-접근">선형 회귀의 행렬
+방식에 의한 수학적 접근</a></li>
+</ul></li>
+<li><a href="#최소자승법에-의한-m-차-다항식-근사"
+id="toc-최소자승법에-의한-m-차-다항식-근사">최소자승법에 의한 m 차
+다항식 근사</a>
+<ul>
+<li><a href="#선형-회귀의-행렬-방식에-의한-수학적-접근-1"
+id="toc-선형-회귀의-행렬-방식에-의한-수학적-접근-1">선형 회귀의 행렬
+방식에 의한 수학적 접근</a></li>
+<li><a href="#np.polyfit-이용한-m-차-다항식-근사-소스코드"
+id="toc-np.polyfit-이용한-m-차-다항식-근사-소스코드">np.polyfit() 이용한
+m 차 다항식 근사 소스코드</a></li>
+<li><a href="#행렬식을-이용한-m차-다항식-근사-소스코드"
+id="toc-행렬식을-이용한-m차-다항식-근사-소스코드">7.2.3 행렬식을 이용한
+<span class="math inline">\(m\)</span>차 다항식 근사 소스코드</a></li>
+</ul></li>
+<li><a href="#연습문제" id="toc-연습문제">연습문제</a></li>
+</ul></li>
+</ul>
+</nav>
+<p>=====================================================</p>
+<div class="center">
+<p><strong>머릿말</strong></p>
+</div>
+<p><strong>Note.</strong> 참고 URL<br />
+<a href="https://github.com/seejokim1/NA_with_python"
+class="uri">https://github.com/seejokim1/NA_with_python</a></p>
+<p>21세기는 기술 혁신과 지식의 융합이 핵심 동력으로 작용하는 시대다.
+특히 4차 산업혁명과 인공지능 기술의 발전은 전통적인 공학 분야에 새로운
+도전과 기회를 제공하고 있다. 이러한 환경에서 수치해석은 공학 문제를
+해결하는 핵심 도구로, 다양한 데이터 기반 분석과 최적화 문제 해결에
+활용되고 있다.</p>
+<p>현재 수치해석의 중요성은 더욱 강조되고 있으며, 특히 자율주행 자동차의
+수치해석에서 가장 중요한 것은 정확도와 실시간 처리이다. 자율주행 차량은
+다양한 센서 데이터를 실시간으로 처리하며, 도로 상황을 정확하게 예측하고
+반응해야 하기 때문이다. 이러한 기술은 수치해석을 통해 더욱 정교해지고,
+안전한 자율주행을 가능하게 한다.</p>
+<p>또한 AI와 수치해석은 깊은 관계를 맺고 있으며, AI의 발전이 수치해석
+방법론에 많은 영향을 미쳤고, 반대로 수치해석 기술이 AI의 성능을
+향상시키는 데 중요한 역할을 해왔다. 수치해석은 실세계의 문제를
+수학적으로 모델링하고 해결하기 위한 다양한 알고리즘과 방법을 제공하며,
+AI는 이러한 수학적 모델을 데이터 기반으로 학습하고 최적화하는 능력을
+갖추고 있다. 이 둘의 결합은 현대 과학과 공학의 중요한 연구 분야로 자리
+잡았다.</p>
+<p>예를 들어, 2024년 노벨 물리학상은 머신러닝과 AI 기술이 물리학 문제
+해결에 중요한 기여를 한 연구자에게 수여되었다. 이는 머신러닝이 복잡한
+물리적 시스템을 시뮬레이션하거나 예측하는 데 사용되고 있음을 보여준다.
+또한 알파고에 이어 알파폴드와 같은 AI 기술이 노벨 화학상을 수상하며,
+수치해석 기법을 바탕으로 AI 모델이 실세계 문제를 해결하는 데 어떻게
+활용될 수 있는지를 보여주었다.</p>
+<p>이 책은 파이썬 프로그래밍 언어를 활용하여 수치해석의 기초부터 심화
+내용까지 단계적으로 학습할 수 있도록 구성되었다. 첫 장에서는 파이썬의
+기본 문법과 데이터 처리에 필수적인 라이브러리(예: NumPy, Matplotlib)를
+다루며, 프로그래밍과 수치해석의 연결 고리를 제공한다. 이어지는 장에서는
+비선형 방정식 근사법, 선형 연립방정식 해법, 수치미분 및 수치적분,
+보간법, 수치 회귀 등 전통적인 수치해석의 핵심 주제들을 체계적으로
+소개한다.</p>
+<p>특히 후반부에서는 상미분 방정식과 편미분 방정식의 수치적 해법을
+다루며, 유한차분법(Finite Difference Method)과 유한요소법(Finite Element
+Method)의 응용을 통해 실질적인 문제 해결 방법을 제시한다. 이와 더불어
+Python을 활용하여 다양한 수치해석 문제를 직접 해결해보는 연습문제를
+포함해 독자가 이론과 실습을 병행하며 학습할 수 있도록 하였다.</p>
+<div class="flushright">
+<p>김시조</p>
+</div>
+<h1 id="파이썬의-이해">파이썬의 이해</h1>
+<h1 id="비선형-방정식-구하기">비선형 방정식 구하기</h1>
+<h1 id="선형연립방정식-수치해법">선형연립방정식 수치해법</h1>
+<h1 id="수치미분-numerical-differentiation">수치미분 (Numerical
+Differentiation)</h1>
+<h1 id="수치적분-numerical-integration">수치적분 (Numerical
+Integration)</h1>
+<h1 id="수치-보간-interpolation">수치 보간 (Interpolation)</h1>
+<h1 id="수치-회귀-numerical-regression">수치 회귀 (Numerical
+Regression)</h1>
+<h2 id="최소자승법에-의한-1차-다항식-근사">최소자승법에 의한 1차 다항식
+근사</h2>
+<h3 id="통계적-개념-공분산과-분산">(통계적 개념: 공분산과 분산</h3>
+<h4 class="unnumbered" id="합의-기본-성질">1. 합의 기본 성질</h4>
+<p><span class="math display">\[\sum_{i=1}^{n} x_i = x_1 + x_2 + \cdots
++ x_n\]</span></p>
+<p>상수 <span class="math inline">\(c\)</span>에 대하여,</p>
+<p><span class="math display">\[\sum_{i=1}^{n} c = nc\]</span></p>
+<p>상수배의 합:</p>
+<p><span class="math display">\[\sum_{i=1}^{n} c x_i = c \sum_{i=1}^{n}
+x_i\]</span></p>
+<p>—</p>
+<h4 class="unnumbered" id="평균-mean">2. 평균 (Mean)</h4>
+<p>데이터 <span class="math inline">\(x_i\)</span>의 평균:</p>
+<p><span class="math display">\[\bar{x} = \frac{1}{n} \sum_{i=1}^{n}
+x_i\]</span></p>
+<p>—</p>
+<h4 class="unnumbered" id="분산-variance">3. 분산 (Variance)</h4>
+<p>평균으로부터의 편차 제곱합:</p>
+<p><span class="math display">\[\sum_{i=1}^{n} (x_i -
+\bar{x})^2\]</span></p>
+<p>이를 전개하면,</p>
+<p><span class="math display">\[\sum_{i=1}^{n} (x_i - \bar{x})^2
+=
+\sum_{i=1}^{n} x_i^2 - n\bar{x}^2\]</span></p>
+<p>—</p>
+<h4 class="unnumbered" id="공분산-covariance">4. 공분산
+(Covariance)</h4>
+<p>두 변수 <span class="math inline">\(x, y\)</span>의 공분산:</p>
+<p><span class="math display">\[\sum_{i=1}^{n} (x_i - \bar{x})(y_i -
+\bar{y})
+=
+\sum_{i=1}^{n} x_i y_i - n \bar{x}\bar{y}\]</span></p>
+<p>—</p>
+<h4 class="unnumbered" id="의미">5. 의미</h4>
+<p>- 분산은 데이터의 **흩어짐 정도** - 공분산은 두 변수의 **선형 관계
+정도** - 선형 회귀에서 기울기 계산에 핵심적으로 사용됨</p>
+<h3 id="선형-회귀의-스칼라-방식의-수학적-접근">선형 회귀의 스칼라 방식의
+수학적 접근</h3>
+<h5 id="모델-정의">1. 모델 정의</h5>
+<p>입력 데이터 <span class="math inline">\(x_i\)</span>, 출력 데이터
+<span class="math inline">\(y_i\)</span>가 주어졌을 때, 1차 선형 회귀
+모델은 다음과 같이 가정한다.</p>
+<p><span class="math display">\[\hat{y}_i = \theta_1 + \theta_2
+x_i\]</span></p>
+<p>여기서 <span class="math inline">\(\theta_1\)</span>은
+절편(intercept), <span class="math inline">\(\theta_2\)</span>는
+기울기(slope)이다.</p>
+<p>—</p>
+<h5 id="최소제곱법-least-squares-method">2. 최소제곱법 (Least Squares
+Method)</h5>
+<p>잔차(residual): <span class="math display">\[e_i = y_i -
+\hat{y}_i\]</span></p>
+<p>SSE (Sum of Squared Errors): <span class="math display">\[SSE =
+\sum_{i=1}^{m} (y_i - \theta_1 - \theta_2 x_i)^2\]</span></p>
+<p>목표는 다음을 최소화하는 <span class="math inline">\(\theta_1,
+\theta_2\)</span>를 찾는 것이다.</p>
+<p><span class="math display">\[\min_{\theta_1, \theta_2}
+\sum_{i=1}^{m} (y_i - \theta_1 - \theta_2 x_i)^2\]</span></p>
+<p>—</p>
+<h5 id="최적-조건-정규-방정식-유도">3. 최적 조건 (정규 방정식 유도)</h5>
+<p><span class="math display">\[\frac{\partial SSE}{\partial \theta_1} =
+-2 \sum_{i=1}^{m} (y_i - \theta_1 - \theta_2 x_i) = 0\]</span></p>
+<p><span class="math display">\[\frac{\partial SSE}{\partial \theta_2} =
+-2 \sum_{i=1}^{m} x_i (y_i - \theta_1 - \theta_2 x_i) = 0\]</span></p>
+<p>정리하면 다음의 두 식을 얻는다.</p>
+<p><span class="math display">\[m\theta_1 + \theta_2 \sum x_i = \sum
+y_i\]</span></p>
+<p><span class="math display">\[\theta_1 \sum x_i + \theta_2 \sum x_i^2
+= \sum x_i y_i\]</span></p>
+<p>—</p>
+<h5 id="기울기와-절편-해">4. 기울기와 절편 해</h5>
+<p>기울기:</p>
+<p><span class="math display">\[\theta_2 =
+\frac{\sum x_i y_i - m \bar{x}\bar{y}}
+{\sum x_i^2 - m\bar{x}^2}
+=
+\frac{\sum (x_i-\bar{x})(y_i-\bar{y})}
+{\sum (x_i-\bar{x})^2}\]</span></p>
+<p>절편:</p>
+<p><span class="math display">\[\theta_1 = \bar{y} - \theta_2
+\bar{x}\]</span></p>
+<p>—</p>
+<h5 id="최종-회귀식">5. 최종 회귀식</h5>
+<p><span class="math display">\[\hat{y} = \theta_1 + \theta_2
+x\]</span></p>
+<p>이 결과는 공분산과 분산을 이용한 표현과 동일하다.</p>
+<p><span class="math display">\[\theta_2 =
+\frac{\text{Cov}(x,y)}{\text{Var}(x)}\]</span></p>
+<h3 id="선형-회귀의-행렬-방식에-의한-수학적-접근">선형 회귀의 행렬
+방식에 의한 수학적 접근</h3>
+<p>최종적으로 선형 회귀의 행렬 방식의 최적화 문제는 다음과 같다.</p>
+<p><span class="math display">\[\begin{equation}
+\min_{\theta} \sum_{i=1}^{m} (\hat{y}_i - y_i)^2
+= \min_{\theta} \| \Phi \theta - y \|^2
+\tag{7.1.3-1}
+\end{equation}\]</span></p>
+<ol>
+<li><p><strong>파라미터 벡터</strong></p>
+<p><span class="math display">\[\begin{equation}
+\theta =
+\begin{bmatrix}
+\theta_0 \\
+\theta_1
+\end{bmatrix}
+\tag{7.1.3-2}
+\end{equation}\]</span></p></li>
+<li><p><strong>설계 행렬 (Design Matrix)</strong></p>
+<p>입력 데이터 구조를 행렬 형태로 표현하면,</p>
+<p><span class="math display">\[\begin{equation}
+\Phi =
+\begin{bmatrix}
+1 &amp; x_1 \\
+1 &amp; x_2 \\
+\vdots &amp; \vdots \\
+1 &amp; x_m
+\end{bmatrix}
+=
+\begin{bmatrix}
+\phi^T(x_1) \\
+\phi^T(x_2) \\
+\vdots \\
+\phi^T(x_m)
+\end{bmatrix}
+\tag{7.1.3-3}
+\end{equation}\]</span></p></li>
+<li><p><strong>선형 회귀 예측값</strong></p>
+<p><span class="math display">\[\begin{align}
+\hat{y}_i &amp;= \theta_0 + \theta_1 x_i \\
+          &amp;= [1 \;\; x_i]
+             \begin{bmatrix}
+             \theta_0 \\
+             \theta_1
+             \end{bmatrix}
+          = \phi^T(x_i)\theta
+\end{align}\]</span></p>
+<p>따라서 전체 예측 벡터는</p>
+<p><span class="math display">\[\begin{equation}
+\hat{y} =
+\begin{bmatrix}
+\hat{y}_1 \\
+\hat{y}_2 \\
+\vdots \\
+\hat{y}_m
+\end{bmatrix}
+= \Phi \theta
+\tag{7.1.3-4}
+\end{equation}\]</span></p></li>
+<li><p><strong>손실 함수</strong></p>
+<p><span class="math display">\[\begin{equation}
+J(\theta) = \| y - \Phi \theta \|^2
+\tag{7.1.3-5}
+\end{equation}\]</span></p></li>
+<li><p><strong>최소제곱 최적화 문제</strong></p>
+<p><span class="math display">\[\begin{equation}
+\min_{\theta} \| y - \Phi \theta \|^2
+\tag{7.1.3-6}
+\end{equation}\]</span></p></li>
+<li><p><strong>정규 방정식 (Normal Equation)</strong></p>
+<p><span class="math display">\[\begin{equation}
+\Phi^T \Phi \theta = \Phi^T y
+\tag{7.1.3-7}
+\end{equation}\]</span></p></li>
+<li><p><strong>특징 벡터</strong></p>
+<p><span class="math display">\[\begin{equation}
+\phi(x_i) =
+\begin{bmatrix}
+1 \\
+x_i
+\end{bmatrix}
+\tag{7.1.3-8}
+\end{equation}\]</span></p></li>
+<li><p><strong>최소제곱 해</strong></p>
+<p><span class="math display">\[\begin{equation}
+\theta = (\Phi^T \Phi)^{-1} \Phi^T y
+\tag{7.1.3-9}
+\end{equation}\]</span></p></li>
+</ol>
+<h2 id="최소자승법에-의한-m-차-다항식-근사">최소자승법에 의한 m 차
+다항식 근사</h2>
+<p>다항식</p>
+<p><span class="math display">\[P_m(x) = a_0 + a_1 x + \cdots + a_m
+x^m\]</span></p>
+<p>을 가정한다.</p>
+<h3 id="선형-회귀의-행렬-방식에-의한-수학적-접근-1">선형 회귀의 행렬
+방식에 의한 수학적 접근</h3>
+<p>최종적으로 선형 회귀의 행렬 방식의 최적화 문제는 다음과 같다.</p>
+<p><span class="math display">\[\begin{equation}
+\min_{\theta} \sum_{i=1}^{m} (\hat{y}_i - y_i)^2
+= \min_{\theta} \| \Phi \theta - y \|^2
+\tag{7.1.3-1}
+\end{equation}\]</span></p>
+<ol>
+<li><p><strong>파라미터 벡터</strong></p>
+<p><span class="math display">\[\begin{equation}
+\theta =
+\begin{bmatrix}
+\theta_0 \\
+\theta_1
+\end{bmatrix}
+\tag{7.1.3-2}
+\end{equation}\]</span></p></li>
+<li><p><strong>설계 행렬 (Design Matrix)</strong></p>
+<p>입력 데이터 구조를 행렬 형태로 표현하면,</p>
+<p><span class="math display">\[\begin{equation}
+\Phi =
+\begin{bmatrix}
+1 &amp; x_1 \\
+1 &amp; x_2 \\
+\vdots &amp; \vdots \\
+1 &amp; x_m
+\end{bmatrix}
+=
+\begin{bmatrix}
+\phi^T(x_1) \\
+\phi^T(x_2) \\
+\vdots \\
+\phi^T(x_m)
+\end{bmatrix}
+\tag{7.1.3-3}
+\end{equation}\]</span></p></li>
+<li><p><strong>선형 회귀 예측값</strong></p>
+<p><span class="math display">\[\begin{align}
+\hat{y}_i &amp;= \theta_0 + \theta_1 x_i \\
+          &amp;= [1 \;\; x_i]
+             \begin{bmatrix}
+             \theta_0 \\
+             \theta_1
+             \end{bmatrix}
+          = \phi^T(x_i)\theta
+\end{align}\]</span></p>
+<p>따라서 전체 예측 벡터는</p>
+<p><span class="math display">\[\begin{equation}
+\hat{y} =
+\begin{bmatrix}
+\hat{y}_1 \\
+\hat{y}_2 \\
+\vdots \\
+\hat{y}_m
+\end{bmatrix}
+= \Phi \theta
+\tag{7.1.3-4}
+\end{equation}\]</span></p></li>
+<li><p><strong>손실 함수</strong></p>
+<p><span class="math display">\[\begin{equation}
+J(\theta) = \| y - \Phi \theta \|^2
+\tag{7.1.3-5}
+\end{equation}\]</span></p></li>
+<li><p><strong>최소제곱 최적화 문제</strong></p>
+<p><span class="math display">\[\begin{equation}
+\min_{\theta} \| y - \Phi \theta \|^2
+\tag{7.1.3-6}
+\end{equation}\]</span></p></li>
+<li><p><strong>정규 방정식 (Normal Equation)</strong></p>
+<p><span class="math display">\[\begin{equation}
+\Phi^T \Phi \theta = \Phi^T y
+\tag{7.1.3-7}
+\end{equation}\]</span></p></li>
+<li><p><strong>특징 벡터</strong></p>
+<p><span class="math display">\[\begin{equation}
+\phi(x_i) =
+\begin{bmatrix}
+1 \\
+x_i
+\end{bmatrix}
+\tag{7.1.3-8}
+\end{equation}\]</span></p></li>
+<li><p><strong>최소제곱 해</strong></p>
+<p><span class="math display">\[\begin{equation}
+\theta = (\Phi^T \Phi)^{-1} \Phi^T y
+\tag{7.1.3-9}
+\end{equation}\]</span></p></li>
+</ol>
+<h3 id="np.polyfit-이용한-m-차-다항식-근사-소스코드">np.polyfit() 이용한
+m 차 다항식 근사 소스코드</h3>
+<p><strong>실습예제:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter07/section_07_02_02_polyfit_polynomial_approximation.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter07/section_07_02_02_polyfit_polynomial_approximation.py</a></p>
+<div class="sourceCode" id="cb1" data-language="Python"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.array([<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>])</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.array([<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">5</span>])</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>coef <span class="op">=</span> np.polyfit(x,y,<span class="dv">2</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>poly <span class="op">=</span> np.poly1d(coef)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>x_new <span class="op">=</span> np.linspace(<span class="dv">0</span>,<span class="dv">3</span>,<span class="dv">100</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>plt.scatter(x,y)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>plt.plot(x_new, poly(x_new))</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div>
+<h3 id="행렬식을-이용한-m차-다항식-근사-소스코드">7.2.3 행렬식을 이용한
+<span class="math inline">\(m\)</span>차 다항식 근사 소스코드</h3>
+<p>본 예제는 행렬식을 이용하여 최소자승법으로 <span
+class="math inline">\(m\)</span>차 다항식 근사를 수행한다. 데이터
+포인트를 생성하고, 정규방정식</p>
+<p><span class="math display">\[\theta = (\Phi^T \Phi)^{-1} \Phi^T
+y\]</span></p>
+<p>을 이용하여 회귀 계수를 계산한다.</p>
+<h4 class="unnumbered" id="데이터-생성">1. 데이터 생성</h4>
+<ul>
+<li><p>구간: <span class="math inline">\(x \in
+[-5,\,10]\)</span></p></li>
+<li><p>데이터 개수: 100개</p></li>
+<li><p>참 함수: <span class="math display">\[y = -(10 + x +
+2x^2)\]</span></p></li>
+<li><p>실제 데이터는 잡음을 포함하여 생성</p></li>
+</ul>
+<h4 class="unnumbered" id="설계-행렬design-matrix">2. 설계 행렬(Design
+Matrix)</h4>
+<p><span class="math display">\[\Phi =
+\begin{bmatrix}
+1 &amp; x_1 &amp; x_1^2 \\
+1 &amp; x_2 &amp; x_2^2 \\
+\vdots &amp; \vdots &amp; \vdots \\
+1 &amp; x_n &amp; x_n^2
+\end{bmatrix}\]</span></p>
+<h4 class="unnumbered" id="최소자승-해">3. 최소자승 해</h4>
+<p><span class="math display">\[\begin{equation}
+\theta =
+\begin{bmatrix}
+a_0 \\ a_1 \\ a_2
+\end{bmatrix}
+=
+(\Phi^T \Phi)^{-1} \Phi^T y
+\tag{7.2.3-1}
+\end{equation}\]</span></p>
+<h4 class="unnumbered" id="결과-시각화">4. 결과 시각화</h4>
+<ul>
+<li><p>원래 데이터: 파란 점으로 표시</p></li>
+<li><p>근사 다항식: 붉은 곡선으로 표시</p></li>
+<li><p>데이터에 가장 적합한 2차 다항식이 도출됨</p></li>
+</ul>
+<h4 class="unnumbered" id="요약">요약</h4>
+<ul>
+<li><p>최소자승법을 행렬식으로 구현</p></li>
+<li><p>설계행렬 <span class="math inline">\(\Phi\)</span> 구성</p></li>
+<li><p>정규방정식으로 회귀계수 계산</p></li>
+<li><p>노이즈 데이터에 대해 안정적인 근사 수행</p></li>
+</ul>
+<p><strong>실습예제:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter07/section_07_02_03_polynomial_approximation_matrix.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter07/section_07_02_03_polynomial_approximation_matrix.py</a></p>
+<div class="sourceCode" id="cb2" data-language="Python"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> polynomial_regression(x, y, m):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="bu">len</span>(x)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    V <span class="op">=</span> np.vander(x, m<span class="op">+</span><span class="dv">1</span>, increasing<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> np.linalg.inv(V.T <span class="op">@</span> V) <span class="op">@</span> V.T <span class="op">@</span> y</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a</span></code></pre></div>
+<h2 id="연습문제">연습문제</h2>
+</body>
+</html>
