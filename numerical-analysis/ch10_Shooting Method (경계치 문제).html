@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="김시조 국립경국대학교: (구)국립안동대학교" />
+  <meta name="dcterms.date" content="2026-03-15" />
+  <title>파이썬을 이용한 알기쉬운 수치해석</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title"><strong>파이썬을 이용한 알기쉬운
+수치해석</strong></h1>
+<p class="author">김시조<br />
+국립경국대학교: (구)국립안동대학교</p>
+<p class="date">2026-03-15</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#파이썬의-이해" id="toc-파이썬의-이해">파이썬의
+이해</a></li>
+<li><a href="#비선형-방정식-구하기" id="toc-비선형-방정식-구하기">비선형
+방정식 구하기</a></li>
+<li><a href="#선형연립방정식-수치해법"
+id="toc-선형연립방정식-수치해법">선형연립방정식 수치해법</a></li>
+<li><a href="#수치미분-numerical-differentiation"
+id="toc-수치미분-numerical-differentiation">수치미분 (Numerical
+Differentiation)</a></li>
+<li><a href="#수치적분-numerical-integration"
+id="toc-수치적분-numerical-integration">수치적분 (Numerical
+Integration)</a></li>
+<li><a href="#수치-보간-interpolation"
+id="toc-수치-보간-interpolation">수치 보간 (Interpolation)</a></li>
+<li><a href="#수치-회귀-numerical-regression"
+id="toc-수치-회귀-numerical-regression">수치 회귀 (Numerical
+Regression)</a></li>
+<li><a href="#비선형연립방정식-수치해법"
+id="toc-비선형연립방정식-수치해법">비선형연립방정식 수치해법</a></li>
+<li><a href="#상미분-방정식-초기치문제"
+id="toc-상미분-방정식-초기치문제">상미분 방정식 (초기치문제)</a></li>
+<li><a href="#shooting-method-경계치-문제"
+id="toc-shooting-method-경계치-문제">Shooting Method (경계치 문제)</a>
+<ul>
+<li><a href="#선형-shooting-method" id="toc-선형-shooting-method">선형
+Shooting Method</a>
+<ul>
+<li><a href="#explicit-euler-method"
+id="toc-explicit-euler-method">Explicit Euler Method</a></li>
+<li><a href="#explicit-euler-method-예제"
+id="toc-explicit-euler-method-예제">Explicit Euler Method 예제</a></li>
+</ul></li>
+<li><a href="#비선형-shooting-method"
+id="toc-비선형-shooting-method">비선형 Shooting Method</a></li>
+<li><a href="#연습문제" id="toc-연습문제">연습문제</a></li>
+</ul></li>
+</ul>
+</nav>
+<p>=====================================================</p>
+<div class="center">
+<p><strong>머릿말</strong></p>
+</div>
+<p><strong>Note.</strong> 참고 URL<br />
+<a href="https://github.com/seejokim1/NA_with_python"
+class="uri">https://github.com/seejokim1/NA_with_python</a></p>
+<p>21세기는 기술 혁신과 지식의 융합이 핵심 동력으로 작용하는 시대다.
+특히 4차 산업혁명과 인공지능 기술의 발전은 전통적인 공학 분야에 새로운
+도전과 기회를 제공하고 있다. 이러한 환경에서 수치해석은 공학 문제를
+해결하는 핵심 도구로, 다양한 데이터 기반 분석과 최적화 문제 해결에
+활용되고 있다.</p>
+<p>현재 수치해석의 중요성은 더욱 강조되고 있으며, 특히 자율주행 자동차의
+수치해석에서 가장 중요한 것은 정확도와 실시간 처리이다. 자율주행 차량은
+다양한 센서 데이터를 실시간으로 처리하며, 도로 상황을 정확하게 예측하고
+반응해야 하기 때문이다. 이러한 기술은 수치해석을 통해 더욱 정교해지고,
+안전한 자율주행을 가능하게 한다.</p>
+<p>또한 AI와 수치해석은 깊은 관계를 맺고 있으며, AI의 발전이 수치해석
+방법론에 많은 영향을 미쳤고, 반대로 수치해석 기술이 AI의 성능을
+향상시키는 데 중요한 역할을 해왔다. 수치해석은 실세계의 문제를
+수학적으로 모델링하고 해결하기 위한 다양한 알고리즘과 방법을 제공하며,
+AI는 이러한 수학적 모델을 데이터 기반으로 학습하고 최적화하는 능력을
+갖추고 있다. 이 둘의 결합은 현대 과학과 공학의 중요한 연구 분야로 자리
+잡았다.</p>
+<p>예를 들어, 2024년 노벨 물리학상은 머신러닝과 AI 기술이 물리학 문제
+해결에 중요한 기여를 한 연구자에게 수여되었다. 이는 머신러닝이 복잡한
+물리적 시스템을 시뮬레이션하거나 예측하는 데 사용되고 있음을 보여준다.
+또한 알파고에 이어 알파폴드와 같은 AI 기술이 노벨 화학상을 수상하며,
+수치해석 기법을 바탕으로 AI 모델이 실세계 문제를 해결하는 데 어떻게
+활용될 수 있는지를 보여주었다.</p>
+<p>이 책은 파이썬 프로그래밍 언어를 활용하여 수치해석의 기초부터 심화
+내용까지 단계적으로 학습할 수 있도록 구성되었다. 첫 장에서는 파이썬의
+기본 문법과 데이터 처리에 필수적인 라이브러리(예: NumPy, Matplotlib)를
+다루며, 프로그래밍과 수치해석의 연결 고리를 제공한다. 이어지는 장에서는
+비선형 방정식 근사법, 선형 연립방정식 해법, 수치미분 및 수치적분,
+보간법, 수치 회귀 등 전통적인 수치해석의 핵심 주제들을 체계적으로
+소개한다.</p>
+<p>특히 후반부에서는 상미분 방정식과 편미분 방정식의 수치적 해법을
+다루며, 유한차분법(Finite Difference Method)과 유한요소법(Finite Element
+Method)의 응용을 통해 실질적인 문제 해결 방법을 제시한다. 이와 더불어
+Python을 활용하여 다양한 수치해석 문제를 직접 해결해보는 연습문제를
+포함해 독자가 이론과 실습을 병행하며 학습할 수 있도록 하였다.</p>
+<div class="flushright">
+<p>김시조</p>
+</div>
+<h1 id="파이썬의-이해">파이썬의 이해</h1>
+<h1 id="비선형-방정식-구하기">비선형 방정식 구하기</h1>
+<h1 id="선형연립방정식-수치해법">선형연립방정식 수치해법</h1>
+<h1 id="수치미분-numerical-differentiation">수치미분 (Numerical
+Differentiation)</h1>
+<h1 id="수치적분-numerical-integration">수치적분 (Numerical
+Integration)</h1>
+<h1 id="수치-보간-interpolation">수치 보간 (Interpolation)</h1>
+<h1 id="수치-회귀-numerical-regression">수치 회귀 (Numerical
+Regression)</h1>
+<h1 id="비선형연립방정식-수치해법">비선형연립방정식 수치해법</h1>
+<h1 id="상미분-방정식-초기치문제">상미분 방정식 (초기치문제)</h1>
+<h1 id="shooting-method-경계치-문제">Shooting Method (경계치 문제)</h1>
+<h2 id="선형-shooting-method">선형 Shooting Method</h2>
+<p>경계치 문제(BVP):</p>
+<p><span class="math display">\[y&#39;&#39; = f(x,y,y&#39;), \quad
+y(a)=\alpha, \quad y(b)=\beta\]</span></p>
+<p>이를 초기치 문제(IVP)로 변환하여 해결하는 방법이 Shooting
+Method이다.</p>
+<h3 id="explicit-euler-method">Explicit Euler Method</h3>
+<h5 id="경계값-문제-boundary-value-problem">1. 경계값 문제 (Boundary
+Value Problem)</h5>
+<p>공간 변수 <span class="math inline">\(x\)</span>에 대한
+미분방정식:</p>
+<p><span class="math display">\[\frac{dy}{dx} = v(x,y),
+\quad \text{BC: } y(0)=y_0\]</span></p>
+<p>또는 2차 선형 BVP:</p>
+<p><span class="math display">\[\frac{d^2 y}{dx^2} + A\frac{dy}{dx} + By
+= 0,
+\quad y(0)=y_0,\; y(1)=y_1\]</span></p>
+<p>—</p>
+<h5 id="차-ode를-1차-시스템으로-변환">2. 2차 ODE를 1차 시스템으로
+변환</h5>
+<p>상태 변수 정의:</p>
+<p><span class="math display">\[y_1 = y, \quad y_2 = y&#39;\]</span></p>
+<p>1차 연립방정식:</p>
+<p><span class="math display">\[\frac{dy_1}{dx} = y_2\]</span> <span
+class="math display">\[\frac{dy_2}{dx} = -Ay_2 - By_1\]</span></p>
+<p>행렬 형태:</p>
+<p><span class="math display">\[\frac{d}{dx}
+\begin{bmatrix}
+y_1 \\
+y_2
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 &amp; 1 \\
+-B &amp; -A
+\end{bmatrix}
+\begin{bmatrix}
+y_1 \\
+y_2
+\end{bmatrix}\]</span></p>
+<p>—</p>
+<h5 id="explicit-euler-적용">3. Explicit Euler 적용</h5>
+<p>일반 형태:</p>
+<p><span class="math display">\[\mathbf{y}_{n+1}
+=
+\mathbf{y}_n
++
+\Delta x \, F(\mathbf{y}_n)\]</span></p>
+<p>본 문제에서는:</p>
+<p><span class="math display">\[\begin{bmatrix}
+y_1^{n+1} \\
+y_2^{n+1}
+\end{bmatrix}
+=
+\begin{bmatrix}
+y_1^n \\
+y_2^n
+\end{bmatrix}
++
+\Delta x
+\begin{bmatrix}
+0 &amp; 1 \\
+-B &amp; -A
+\end{bmatrix}
+\begin{bmatrix}
+y_1^n \\
+y_2^n
+\end{bmatrix}\]</span></p>
+<p>—</p>
+<h5 id="bvp-해결-전략-shooting-method">4. BVP 해결 전략 (Shooting
+Method)</h5>
+<p>1. 미지 초기값 <span class="math inline">\(y_2(0)\)</span>를
+가정한다. 2. Explicit Euler로 IVP처럼 적분한다. 3. 계산된 <span
+class="math inline">\(y(1)\)</span>이 경계조건 <span
+class="math inline">\(y_1\)</span>과 일치하는지 확인한다. 4. 오차가 크면
+초기 기울기를 수정한다. 5. 경계조건 만족할 때까지 반복한다.</p>
+<p>—</p>
+<h5 id="핵심-개념-요약">핵심 개념 요약</h5>
+<p>- BVP → IVP로 변환 (Shooting Method) - 2차 ODE → 1차 연립시스템 -
+Explicit Euler: <span class="math display">\[y_{n+1} = y_n + \Delta x
+f(y_n)\]</span> - 경계조건 만족할 때까지 반복 보정</p>
+<h3 id="explicit-euler-method-예제">Explicit Euler Method 예제</h3>
+<h5 id="문제-정의-2차-경계값-문제">1. 문제 정의 (2차 경계값 문제)</h5>
+<p><span class="math display">\[\frac{d^2 y}{dx^2} + 3\frac{dy}{dx} + y
+= 0\]</span></p>
+<p>경계조건: <span class="math display">\[y(0)=3, \quad
+y(3)=1\]</span></p>
+<p>—</p>
+<h5 id="차-연립방정식으로-변환">2. 1차 연립방정식으로 변환</h5>
+<p>상태 변수 정의:</p>
+<p><span class="math display">\[y_1 = y, \quad y_2 =
+\frac{dy}{dx}\]</span></p>
+<p>그러면,</p>
+<p><span class="math display">\[\frac{dy_1}{dx} = y_2\]</span> <span
+class="math display">\[\frac{dy_2}{dx} = -3y_2 - y_1\]</span></p>
+<p>행렬 형태:</p>
+<p><span class="math display">\[\frac{d}{dx}
+\begin{bmatrix}
+y_1 \\
+y_2
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 &amp; 1 \\
+-1 &amp; -3
+\end{bmatrix}
+\begin{bmatrix}
+y_1 \\
+y_2
+\end{bmatrix}\]</span></p>
+<p>—</p>
+<h5 id="explicit-forward-euler-적용">3. Explicit Forward Euler 적용</h5>
+<p>일반 공식:</p>
+<p><span class="math display">\[\mathbf{y}_{n+1}
+=
+\mathbf{y}_n
++
+\Delta x
+\begin{bmatrix}
+0 &amp; 1 \\
+-1 &amp; -3
+\end{bmatrix}
+\mathbf{y}_n\]</span></p>
+<p>즉,</p>
+<p><span class="math display">\[\begin{bmatrix}
+y_1^{n+1} \\
+y_2^{n+1}
+\end{bmatrix}
+=
+\begin{bmatrix}
+y_1^n \\
+y_2^n
+\end{bmatrix}
++
+\Delta x
+\begin{bmatrix}
+y_2^n \\
+-3y_2^n - y_1^n
+\end{bmatrix}\]</span></p>
+<p>—</p>
+<h5 id="해결-절차-shooting-method">4. 해결 절차 (Shooting Method)</h5>
+<p>1. 미지 초기 기울기 <span class="math inline">\(y_2(0)\)</span> 가정
+2. Explicit Euler로 <span class="math inline">\(x=3\)</span>까지 적분 3.
+계산된 <span class="math inline">\(y(3)\)</span>이 1과 일치하는지 확인
+4. 불일치 시 초기 기울기 수정 5. 경계조건 만족할 때까지 반복</p>
+<p>—</p>
+<h5 id="핵심-요약">핵심 요약</h5>
+<p>- 2차 BVP → 1차 연립 ODE 변환 - Explicit Euler: <span
+class="math display">\[y_{n+1} = y_n + \Delta x f(y_n)\]</span> -
+Shooting Method로 경계조건 만족</p>
+<p><strong>실습예제 1:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter10/section_10_01_02_explicit_euler_shooting_code1.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter10/section_10_01_02_explicit_euler_shooting_code1.py</a></p>
+<p><strong>실습예제 2:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter10/section_10_01_02_explicit_euler_shooting_code2.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter10/section_10_01_02_explicit_euler_shooting_code2.py</a></p>
+<p>예:</p>
+<p><span class="math display">\[y&#39;&#39; = -y, \quad y(0)=0, \quad
+y(\pi/2)=1\]</span></p>
+<div class="sourceCode" id="cb1" data-language="Python"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> F(x,y):</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    y1,y2 <span class="op">=</span> y</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array([y2, <span class="op">-</span>y1])</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> shooting_linear(s_guess, h<span class="op">=</span><span class="fl">0.01</span>):</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.array([<span class="fl">0.0</span>, s_guess])</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> x <span class="op">&lt;</span> np.pi<span class="op">/</span><span class="dv">2</span>:</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> euler_step(F,x,y,h)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        x <span class="op">+=</span> h</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> y[<span class="dv">0</span>]</span></code></pre></div>
+<h2 id="비선형-shooting-method">비선형 Shooting Method</h2>
+<h5 id="문제-개요">1. 문제 개요</h5>
+<p>비선형 경계값 문제(BVP)를 초기값 문제(IVP)로 변환하여 반복적으로 해를
+찾는 방법이다. 초기 기울기(또는 미지 초기조건)를 추정한 뒤, 경계조건을
+만족하도록 조정한다.</p>
+<p>대표 예: Blasius 방정식 <span class="math display">\[\begin{equation}
+f&#39;&#39;&#39; + f f&#39;&#39; = 0
+\end{equation}\]</span></p>
+<p>경계조건: <span class="math display">\[\begin{equation}
+f(0)=0, \quad f&#39;(0)=0, \quad f&#39;(\infty)=1
+\end{equation}\]</span></p>
+<h5 id="차-연립-ode-변환">2. 1차 연립 ODE 변환</h5>
+<p><span class="math display">\[\begin{align}
+y_1 &amp;= f \\
+y_2 &amp;= f&#39; \\
+y_3 &amp;= f&#39;&#39;
+\end{align}\]</span></p>
+<p><span class="math display">\[\begin{equation}
+\begin{cases}
+y_1&#39; = y_2 \\
+y_2&#39; = y_3 \\
+y_3&#39; = - y_1 y_3
+\end{cases}
+\end{equation}\]</span></p>
+<p>초기조건: <span class="math display">\[\begin{equation}
+y_1(0)=0,\quad y_2(0)=0,\quad y_3(0)=\text{guess}
+\end{equation}\]</span></p>
+<h5 id="shooting-알고리즘">3. Shooting 알고리즘</h5>
+<ol>
+<li><p>초기 기울기 <span
+class="math inline">\(y_3(0)=\text{guess}\)</span> 설정</p></li>
+<li><p>IVP를 수치적으로 적분 (RK4 또는 <code>solve_ivp</code>)</p></li>
+<li><p>목표 조건 <span class="math inline">\(f&#39;(\infty)=1\)</span>
+과 비교</p></li>
+<li><p>오차를 이용해 새로운 guess 계산 (선형 보간 또는 Newton
+방법)</p></li>
+<li><p>수렴할 때까지 반복</p></li>
+</ol>
+<h5 id="선형-보간-기반-갱신식">4. 선형 보간 기반 갱신식</h5>
+<p>두 추정값 <span class="math inline">\((g_1, r_1), (g_2, r_2)\)</span>
+에 대해</p>
+<p><span class="math display">\[\begin{equation}
+g_{new} = g_1 + \frac{g_1 - g_2}{r_1 - r_2}(target - r_1)
+\end{equation}\]</span></p>
+<h5 id="특징">5. 특징</h5>
+<ul>
+<li><p>BVP → IVP 변환</p></li>
+<li><p>비선형 문제에 효과적</p></li>
+<li><p>초기 추정값 선택이 매우 중요</p></li>
+<li><p>Newton–Raphson과 결합 가능</p></li>
+</ul>
+<p><strong>실습예제:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter10/section_10_02_nonlinear_shooting_method.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter10/section_10_02_nonlinear_shooting_method.py</a></p>
+<p>비선형 BVP:</p>
+<p><span class="math display">\[y&#39;&#39; = f(x,y,y&#39;)\]</span></p>
+<p>초기 기울기 <span class="math inline">\(s\)</span>를 가정하고,</p>
+<p><span class="math display">\[\phi(s) = y(b;s) - \beta\]</span></p>
+<p>을 정의한다.</p>
+<p>Newton 방법으로</p>
+<p><span class="math display">\[s_{k+1} = s_k -
+\frac{\phi(s_k)}{\phi&#39;(s_k)}\]</span></p>
+<p>을 반복한다.</p>
+<div class="sourceCode" id="cb2" data-language="Python"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> newton_shoot(s0, tol<span class="op">=</span><span class="fl">1e-6</span>):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> s0</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">10</span>):</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        phi <span class="op">=</span> shooting_linear(s) <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        dphi <span class="op">=</span> (shooting_linear(s<span class="op">+</span><span class="fl">1e-5</span>)<span class="op">-</span>shooting_linear(s))<span class="op">/</span><span class="fl">1e-5</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        s <span class="op">=</span> s <span class="op">-</span> phi<span class="op">/</span>dphi</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">abs</span>(phi) <span class="op">&lt;</span> tol:</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> s</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> s</span></code></pre></div>
+<h2 id="연습문제">연습문제</h2>
+</body>
+</html>
