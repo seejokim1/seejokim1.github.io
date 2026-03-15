@@ -1,0 +1,4042 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="김시조 국립경국대학교: (구)국립안동대학교" />
+  <meta name="dcterms.date" content="2026-03-15" />
+  <title>파이썬을 이용한 알기쉬운 수치해석</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title"><strong>파이썬을 이용한 알기쉬운
+수치해석</strong></h1>
+<p class="author">김시조<br />
+국립경국대학교: (구)국립안동대학교</p>
+<p class="date">2026-03-15</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#파이썬의-이해" id="toc-파이썬의-이해">파이썬의 이해</a>
+<ul>
+<li><a href="#파이썬의-특징" id="toc-파이썬의-특징">파이썬의 특징</a>
+<ul>
+<li><a href="#플랫폼-독립성" id="toc-플랫폼-독립성">플랫폼
+독립성</a></li>
+<li><a href="#인터프리터-언어" id="toc-인터프리터-언어">인터프리터
+언어</a></li>
+<li><a href="#블록과-줄바꿈" id="toc-블록과-줄바꿈">블록과
+줄바꿈</a></li>
+<li><a href="#객체지향-프로그래밍-지원"
+id="toc-객체지향-프로그래밍-지원">객체지향 프로그래밍 지원</a></li>
+<li><a href="#동적-타이핑" id="toc-동적-타이핑">동적 타이핑</a></li>
+<li><a href="#numpy-라이브러리" id="toc-numpy-라이브러리">NumPy
+라이브러리</a></li>
+</ul></li>
+<li><a href="#변수선언" id="toc-변수선언">변수선언</a>
+<ul>
+<li><a href="#자료-형-변수-선언과-변환"
+id="toc-자료-형-변수-선언과-변환">자료 형, 변수 선언과 변환</a></li>
+<li><a href="#파이썬-예약어-keywords"
+id="toc-파이썬-예약어-keywords">파이썬 예약어 (Keywords)</a></li>
+</ul></li>
+<li><a href="#배열array과-행렬matrix"
+id="toc-배열array과-행렬matrix">배열(Array)과 행렬(Matrix)</a>
+<ul>
+<li><a href="#리스트list를-사용한-배열"
+id="toc-리스트list를-사용한-배열">리스트(List)를 사용한 배열</a></li>
+<li><a href="#리스트list-슬라이싱slicing"
+id="toc-리스트list-슬라이싱slicing">리스트(List)
+슬라이싱(Slicing)</a></li>
+<li><a href="#numpy와-배열과의-관계"
+id="toc-numpy와-배열과의-관계">NumPy와 배열과의 관계</a></li>
+<li><a href="#행렬과-배열과의-관계" id="toc-행렬과-배열과의-관계">행렬과
+배열과의 관계</a></li>
+</ul></li>
+<li><a href="#튜플tuple" id="toc-튜플tuple">튜플(tuple)</a>
+<ul>
+<li><a href="#튜플이란" id="toc-튜플이란">튜플이란?</a></li>
+<li><a href="#튜플tuple-형식" id="toc-튜플tuple-형식">튜플(tuple)
+형식</a></li>
+<li><a href="#튜플tuple-특징" id="toc-튜플tuple-특징">튜플(tuple)
+특징</a></li>
+<li><a href="#튜플tuple-예제" id="toc-튜플tuple-예제">튜플(tuple)
+예제</a></li>
+<li><a href="#튜플tuple-slicing-사용"
+id="toc-튜플tuple-slicing-사용">튜플(tuple) slicing : “:” 사용</a></li>
+<li><a href="#튜플tuple-extended-slicing-사용"
+id="toc-튜플tuple-extended-slicing-사용">튜플(tuple) Extended slicing :
+":" 사용</a></li>
+</ul></li>
+<li><a href="#사전dictionary"
+id="toc-사전dictionary">사전(Dictionary)</a>
+<ul>
+<li><a href="#딕셔너리dictionary"
+id="toc-딕셔너리dictionary">딕셔너리(dictionary)</a></li>
+<li><a href="#딕셔너리dictionary-예제"
+id="toc-딕셔너리dictionary-예제">딕셔너리(dictionary) 예제</a></li>
+</ul></li>
+<li><a href="#수학-연산자-및-numpy-비교"
+id="toc-수학-연산자-및-numpy-비교">수학 연산자 및 NumPy 비교</a>
+<ul>
+<li><a href="#파이썬의-기본-수학-연산자와-numpy-연산-비교"
+id="toc-파이썬의-기본-수학-연산자와-numpy-연산-비교">파이썬의 기본 수학
+연산자와 NumPy 연산 비교</a></li>
+<li><a href="#python-과-numpy의-기본-연산"
+id="toc-python-과-numpy의-기본-연산">Python 과 NumPy의 기본
+연산</a></li>
+<li><a href="#python-과-numpy의-배열-연산"
+id="toc-python-과-numpy의-배열-연산">Python 과 NumPy의 배열
+연산</a></li>
+</ul></li>
+<li><a href="#반복-계산" id="toc-반복-계산">반복 계산</a>
+<ul>
+<li><a href="#반복계산이란" id="toc-반복계산이란">반복계산이란?</a></li>
+</ul></li>
+<li><a href="#조건-계산" id="toc-조건-계산">조건 계산</a>
+<ul>
+<li><a href="#if-else-구문" id="toc-if-else-구문"> if   else
+구문</a></li>
+<li><a href="#다중-조건문-if-else-else-구문"
+id="toc-다중-조건문-if-else-else-구문">다중 조건문 (if   else   else
+구문)</a></li>
+<li><a href="#if-구조-예문" id="toc-if-구조-예문">if 구조 예문</a></li>
+<li><a href="#리스트와-조건문을-이용한-다중-조건-계산"
+id="toc-리스트와-조건문을-이용한-다중-조건-계산">② 리스트와 조건문을
+이용한 다중 조건 계산</a></li>
+<li><a href="#조건-표현식을-이용한-간단한-조건-계산"
+id="toc-조건-표현식을-이용한-간단한-조건-계산">③ 조건 표현식을 이용한
+간단한 조건 계산</a></li>
+<li><a href="#비교연산자" id="toc-비교연산자">( 1.8.4 )
+비교연산자</a></li>
+<li><a href="#예제-코드-비교-연산자-사용"
+id="toc-예제-코드-비교-연산자-사용">① 예제 코드: 비교 연산자
+사용</a></li>
+</ul></li>
+<li><a href="#입출력" id="toc-입출력">입출력</a>
+<ul>
+<li><a href="#키보드로-입력-및-화면으로-출력"
+id="toc-키보드로-입력-및-화면으로-출력">( 1.9.1 ) 키보드로 입력 및
+화면으로 출력</a></li>
+<li><a href="#키보드-입력-및-화면으로-출력"
+id="toc-키보드-입력-및-화면으로-출력">키보드 입력 및 화면으로
+출력</a></li>
+<li><a href="#파일로-입력-및-파일로-출력"
+id="toc-파일로-입력-및-파일로-출력">파일로 입력 및 파일로 출력</a></li>
+</ul></li>
+<li><a href="#함수function" id="toc-함수function">함수(Function)</a>
+<ul>
+<li><a href="#내장함수와-사용자-정의-함수"
+id="toc-내장함수와-사용자-정의-함수">내장함수와 사용자 정의
+함수</a></li>
+<li><a href="#파이썬과-numpy의-내장함수-종류"
+id="toc-파이썬과-numpy의-내장함수-종류">파이썬과 NumPy의 내장함수
+종류</a></li>
+<li><a href="#사용자-정의-함수-선언과-특징"
+id="toc-사용자-정의-함수-선언과-특징">사용자 정의 함수 선언과
+특징</a></li>
+<li><a href="#사용자-정의-함수-예제"
+id="toc-사용자-정의-함수-예제">사용자 정의 함수 예제</a></li>
+</ul></li>
+<li><a href="#numpy를-이용한-벡터-행렬"
+id="toc-numpy를-이용한-벡터-행렬">NumPy를 이용한 벡터 행렬</a>
+<ul>
+<li><a href="#내적dot-product과-외적cross-product"
+id="toc-내적dot-product과-외적cross-product">내적(Dot Product)과
+외적(Cross Product)</a></li>
+<li><a href="#두-벡터간의-거리-구하기"
+id="toc-두-벡터간의-거리-구하기">두 벡터간의 거리 구하기</a></li>
+<li><a href="#두-행렬의-곱-matrix-multiplication"
+id="toc-두-행렬의-곱-matrix-multiplication">두 행렬의 곱 (matrix
+multiplication)</a></li>
+</ul></li>
+<li><a href="#객체지향-프로그래밍oop"
+id="toc-객체지향-프로그래밍oop">객체지향 프로그래밍(OOP)</a>
+<ul>
+<li><a href="#클래스-개요" id="toc-클래스-개요">클래스 개요</a></li>
+<li><a href="#클래스-선언" id="toc-클래스-선언">클래스 선언</a></li>
+<li><a href="#속성변수" id="toc-속성변수">속성(변수)</a></li>
+<li><a href="#클래스-메서드함수" id="toc-클래스-메서드함수">클래스
+메서드(함수)</a></li>
+<li><a href="#객체지향-프로그래밍oop-예제-1"
+id="toc-객체지향-프로그래밍oop-예제-1">객체지향 프로그래밍(OOP) 예제
+1</a></li>
+<li><a href="#객체지향-프로그래밍oop-예제-2"
+id="toc-객체지향-프로그래밍oop-예제-2">객체지향 프로그래밍(OOP) 예제
+2</a></li>
+</ul></li>
+<li><a href="#matplotlib를-이용한-그래프-시각화"
+id="toc-matplotlib를-이용한-그래프-시각화">matplotlib를 이용한 그래프
+시각화</a>
+<ul>
+<li><a href="#그래프-그리기-위한-주요-내장함수"
+id="toc-그래프-그리기-위한-주요-내장함수">그래프 그리기 위한 주요
+내장함수</a></li>
+<li><a href="#차원-그래프" id="toc-차원-그래프">2차원 그래프</a></li>
+<li><a href="#차원-산점도" id="toc-차원-산점도">2차원 산점도</a></li>
+<li><a href="#차원-그래프-1" id="toc-차원-그래프-1">3차원
+그래프</a></li>
+</ul></li>
+<li><a href="#연습문제" id="toc-연습문제">연습문제</a></li>
+</ul></li>
+</ul>
+</nav>
+<p>=====================================================</p>
+<div class="center">
+<p><strong>머릿말</strong></p>
+</div>
+<p><strong>Note.</strong> 참고 URL<br />
+<a href="https://github.com/seejokim1/NA_with_python/tree/main"
+class="uri">https://github.com/seejokim1/NA_with_python/tree/main</a></p>
+<p>21세기는 기술 혁신과 지식의 융합이 핵심 동력으로 작용하는 시대다.
+특히 4차 산업혁명과 인공지능 기술의 발전은 전통적인 공학 분야에 새로운
+도전과 기회를 제공하고 있다. 이러한 환경에서 수치해석은 공학 문제를
+해결하는 핵심 도구로, 다양한 데이터 기반 분석과 최적화 문제 해결에
+활용되고 있다.</p>
+<p>현재 수치해석의 중요성은 더욱 강조되고 있으며, 특히 자율주행 자동차의
+수치해석에서 가장 중요한 것은 정확도와 실시간 처리이다. 자율주행 차량은
+다양한 센서 데이터를 실시간으로 처리하며, 도로 상황을 정확하게 예측하고
+반응해야 하기 때문이다. 이러한 기술은 수치해석을 통해 더욱 정교해지고,
+안전한 자율주행을 가능하게 한다.</p>
+<p>또한 AI와 수치해석은 깊은 관계를 맺고 있으며, AI의 발전이 수치해석
+방법론에 많은 영향을 미쳤고, 반대로 수치해석 기술이 AI의 성능을
+향상시키는 데 중요한 역할을 해왔다. 수치해석은 실세계의 문제를
+수학적으로 모델링하고 해결하기 위한 다양한 알고리즘과 방법을 제공하며,
+AI는 이러한 수학적 모델을 데이터 기반으로 학습하고 최적화하는 능력을
+갖추고 있다. 이 둘의 결합은 현대 과학과 공학의 중요한 연구 분야로 자리
+잡았다.</p>
+<p>예를 들어, 2024년 노벨 물리학상은 머신러닝과 AI 기술이 물리학 문제
+해결에 중요한 기여를 한 연구자에게 수여되었다. 이는 머신러닝이 복잡한
+물리적 시스템을 시뮬레이션하거나 예측하는 데 사용되고 있음을 보여준다.
+또한 알파고에 이어 알파폴드와 같은 AI 기술이 노벨 화학상을 수상하며,
+수치해석 기법을 바탕으로 AI 모델이 실세계 문제를 해결하는 데 어떻게
+활용될 수 있는지를 보여주었다.</p>
+<p>이 책은 파이썬 프로그래밍 언어를 활용하여 수치해석의 기초부터 심화
+내용까지 단계적으로 학습할 수 있도록 구성되었다. 첫 장에서는 파이썬의
+기본 문법과 데이터 처리에 필수적인 라이브러리(예: NumPy, Matplotlib)를
+다루며, 프로그래밍과 수치해석의 연결 고리를 제공한다. 이어지는 장에서는
+비선형 방정식 근사법, 선형 연립방정식 해법, 수치미분 및 수치적분,
+보간법, 수치 회귀 등 전통적인 수치해석의 핵심 주제들을 체계적으로
+소개한다.</p>
+<p>특히 후반부에서는 상미분 방정식과 편미분 방정식의 수치적 해법을
+다루며, 유한차분법(Finite Difference Method)과 유한요소법(Finite Element
+Method)의 응용을 통해 실질적인 문제 해결 방법을 제시한다. 이와 더불어
+Python을 활용하여 다양한 수치해석 문제를 직접 해결해보는 연습문제를
+포함해 독자가 이론과 실습을 병행하며 학습할 수 있도록 하였다.</p>
+<div class="flushright">
+<p>김시조</p>
+</div>
+<h1 id="파이썬의-이해">파이썬의 이해</h1>
+<h2 id="파이썬의-특징">파이썬의 특징</h2>
+<h3 id="플랫폼-독립성">플랫폼 독립성</h3>
+<p>파이썬 코드는 Windows, macOS, Linux 등 다양한 운영 체제에서 동일한
+결과를 얻을 수 있다. 예를 들어, 간단한 파일 읽기 코드는 모든 운영
+체제에서 동일하게 작동한다.</p>
+<p><strong>실습예제</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_01_features.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_01_features.py</a></p>
+<h3 id="인터프리터-언어">인터프리터 언어</h3>
+<p>파이썬 코드는 작성하면 바로 실행하여 결과를 확인할 수 있다. 파이썬
+쉘에서 간단한 계산을 바로 수행할 수 있다.</p>
+<div class="sourceCode" id="cb1" data-language="Python"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="dv">2</span> <span class="op">+</span> <span class="dv">3</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Output: 5</span></span></code></pre></div>
+<h3 id="블록과-줄바꿈">블록과 줄바꿈</h3>
+<p>파이썬에서 블록(block)은 들여쓰기(indentation)를 통해 정의된다.
+파이썬은 중괄호 {} 대신 들여쓰기를 사용하여 코드의 구조를 나타낸다. 같은
+수준으로 들여쓰기된 코드가 하나의 블록을 구성한다. 들여쓰기 규칙은 블록
+내 코드는 4칸(space) 또는 탭(tab)으로 들여쓰면 된다. 같은 블록 내에서는
+들여쓰기 크기를 일관되게 유지해야 한다. 서로 다른 들여쓰기는 오류를
+발생시킨다. 블록이 끝나면 들여쓰기를 줄여야 하며, <code>pass</code>
+키워드를 사용하여 빈 블록을 유지할 수 있다.</p>
+<p><strong>① 예제: 조건문과 반복문의 블록</strong></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code>n = 5
+if n &gt; 0:  # 조건문 블록 시작
+    print(&quot;n is positive&quot;)
+
+for i in range(n):  # 반복문 블록 시작
+    print(f&quot;Iteration {i}&quot;)
+
+print(&quot;Loop finished&quot;)
+print(&quot;Outside all blocks&quot;)</code></pre></td>
+<td style="text-align: left;"><pre><code>n is positive
+Iteration 0
+Iteration 1
+Iteration 2
+Iteration 3
+Iteration 4
+Loop finished
+Outside all blocks</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="객체지향-프로그래밍-지원">객체지향 프로그래밍 지원</h3>
+<p>파이썬에서 클래스를 정의하고 객체를 생성하여 사용하는 방법은 객체지향
+프로그래밍의 핵심 개념을 잘 보여준다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code>class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        return &quot;makes a sound&quot;
+
+class Dog(Animal):
+    def speak(self):
+        return &quot;barks&quot;
+
+pet = Dog(&quot;Buddy&quot;)
+print(pet.name, pet.speak())</code></pre></td>
+<td style="text-align: left;"><pre><code>Buddy barks</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="동적-타이핑">동적 타이핑</h3>
+<p>파이썬에서는 변수에 대한 타입 선언 없이도 다양한 타입의 값을 할당하고
+변경할 수 있다. 이는 코드 작성을 더욱 유연하고 간단하게 해준다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code>number = 10        # 처음에는 정수를 할당
+print(number)
+
+number = &quot;ten&quot;     # 나중에는 문자열을 할당
+print(number)</code></pre></td>
+<td style="text-align: left;"><pre><code>10
+ten</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="numpy-라이브러리">NumPy 라이브러리</h3>
+<p>NumPy는 파이썬에서 고성능 수치 계산을 가능하게 하는 라이브러리로,
+대규모 다차원 배열과 행렬 연산에 최적화되어 있다. 이는 과학 및 공학
+연산을 위한 강력한 도구로 자리 잡았다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code>import numpy as np
+
+a = np.array([1, 2, 3])
+b = np.array([4, 5, 6])
+
+print(a + b)   # 배열 간 덧셈</code></pre></td>
+<td style="text-align: left;"><pre><code>[5 7 9]</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="변수선언">변수선언</h2>
+<h3 id="자료-형-변수-선언과-변환">자료 형, 변수 선언과 변환</h3>
+<p><strong>자료형과 변수</strong></p>
+<p>파이썬은 동적 타이핑을 지원해 자료형 선언 없이도 변수를 사용할 수
+있다. 문자열은 단일 문자도 문자열(str)로 처리하며, 숫자형과 문자열 간
+변환이 간단하다. 예를 들어, <code>int("123")</code>은 문자열 숫자를
+변환하고, <code>str(123)</code>은 정수를 문자열로 변환한다.
+정수형(int)은 크기 제한 없이 동작하며, 실수형(float)은 부동 소수점
+연산을 지원한다. 문자열은 다양한 연산을 제공하며 유니코드 기반으로
+강력한 처리 기능을 가진다.</p>
+<p><strong>파이썬 메모리 관리</strong></p>
+<p>파이썬은 변수의 크기를 자동으로 조정하며, 정적 타입 언어처럼 메모리
+크기를 명시하지 않아도 된다. 예를 들어, 정수의 경우 모두 사용자가 직접
+메모리 관리를 고려하지 않아도 동작한다. 동적 메모리 관리로 인해 복잡한
+저수준 문제를 처리하지 않아도 프로그램은 효율적으로 실행될 수 있다.</p>
+<p><strong>다양한 변수 선언에 대한 파이썬 코드와 실행 결과</strong></p>
+<p>이 표는 다양한 변수 선언과 그 결과를 명확히 설명하며, 파이썬의 변수
+선언과 자료형 변환에 대한 이해를 돕는다. 각각의 사례는 파이썬의 동적
+타이핑과 유연성을 강조하며, 프로그래밍 초보자에게 적합한 예이다.</p>
+<p><strong>실습예제:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_02_variables.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_02_variables.py</a></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+<th style="text-align: left;"><strong>설명</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>x = 10</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(x)</code></td>
+<td style="text-align: left;">10</td>
+<td style="text-align: left;">정수 값 10을 변수 <code>x</code>에
+할당하였다. 파이썬은 값에 따라 자료형을 자동으로 결정한다. 여기서
+<code>x</code>는 <code>int</code> 자료형으로 저장된다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>y = 3.14</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(y)</code></td>
+<td style="text-align: left;">3.14</td>
+<td style="text-align: left;">실수 값 3.14를 변수 <code>y</code>에
+할당하였다. 파이썬은 이를 <code>float</code> 자료형으로 인식한다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>name = "Alice"</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(name)</code></td>
+<td style="text-align: left;">Alice</td>
+<td style="text-align: left;">문자열 <code>"Alice"</code>를 변수
+<code>name</code>에 할당하였다. 파이썬은 문자열을 <code>str</code>
+자료형으로 처리한다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>is_valid = True</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(is_valid)</code></td>
+<td style="text-align: left;">True</td>
+<td style="text-align: left;">Boolean 값 <code>True</code>를 변수
+<code>is_valid</code>에 할당하였다. 이는 논리형으로 참을 나타낸다. 연산
+시에는 값 1로 간주된다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>a = 5</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>b = a + 2</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(a, b)</code></td>
+<td style="text-align: left;">5 7</td>
+<td style="text-align: left;">변수 <code>a</code>에 정수 5를 저장하고,
+변수 <code>b</code>에 <code>a + 2</code>의 결과를 저장하였다. 변수 간
+연산이 정상적으로 수행되었음을 보여준다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>c = 10</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>c = "Hello"</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(c)</code></td>
+<td style="text-align: left;">Hello</td>
+<td style="text-align: left;">변수 <code>c</code>에 처음에는 정수 10을
+저장하고, 이후 문자열 <code>"Hello"</code>를 다시 저장하였다. 파이썬의
+동적 타이핑 특징으로 같은 변수에 다른 자료형을 재할당할 수 있다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>try:</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>  print(a)</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>except NameError</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>  as e:</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>  print(e)</code></td>
+<td style="text-align: left;">name ’a’ is not defined</td>
+<td style="text-align: left;">선언되지 않은 변수 <code>a</code>에
+접근하려고 시도하면 <code>NameError</code>가 발생한다. 이는 파이썬이
+정의되지 않은 변수를 사용할 수 없도록 제한함을 보여준다.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+<th style="text-align: left;"><strong>설명</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>c = ’76.3’</code></td>
+<td style="text-align: left;">없음</td>
+<td style="text-align: left;"><code>c</code>는 문자열(str) 자료형으로
+인식된다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>d = float(c)</code></td>
+<td style="text-align: left;">없음</td>
+<td style="text-align: left;"><code>d</code>는 실수형 자료형이
+된다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(c)</code></td>
+<td style="text-align: left;">76.3</td>
+<td style="text-align: left;">문자열 <code>c</code>를 출력한다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(d)</code></td>
+<td style="text-align: left;">76.3</td>
+<td style="text-align: left;">실수형으로 변환된 <code>d</code>를
+출력한다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(c + d)</code></td>
+<td style="text-align: left;">오류 발생: TypeError</td>
+<td style="text-align: left;">문자열과 숫자는 서로 연산할 수 없다.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+<th style="text-align: left;"><strong>설명</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>x = int(3.9)</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(x)</code></td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">float 값을 int로 변환하여 소수점을 버리고
+정수 부분만 저장한다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>y = float(5)</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(y)</code></td>
+<td style="text-align: left;">5.0</td>
+<td style="text-align: left;">int 값을 float로 변환하여 소수점 아래에
+0을 추가한 실수형으로 저장한다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>z = str(42)</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(z)</code></td>
+<td style="text-align: left;">42</td>
+<td style="text-align: left;">결과는 문자열로, 숫자가 아닌 텍스트
+데이터로 처리된다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>a = "3.14"</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>b = float(a)</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(b)</code></td>
+<td style="text-align: left;">3.14</td>
+<td style="text-align: left;">문자열로 저장된 숫자 값을 float로
+변환한다. 이 경우, 문자열이 숫자 형식이어야 변환이 가능하다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>c = "10"</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>d = int(c)</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(d)</code></td>
+<td style="text-align: left;">10</td>
+<td style="text-align: left;">문자열 "10"을 정수형으로 변환하여 숫자
+연산이 가능하게 만든다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>e = 1 + True</code></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(e)</code></td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">True는 숫자 1로 간주되어 정수 연산이
+수행된다. 파이썬에서 True는 1, False는 0이다.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="파이썬-예약어-keywords">파이썬 예약어 (Keywords)</h3>
+<p>파이썬의 예약어(Keywords)는 언어의 문법과 구조를 정의하는 데 사용되는
+미리 정의된 단어들이다. 이러한 예약어는 변수명이나 함수명으로 사용할 수
+없으며, 각각 고유한 기능과 역할을 수행한다. 예를 들어, <code>if</code>,
+<code>else</code>, <code>for</code>는 조건문과 반복문을 정의하며,
+<code>class</code>, <code>def</code>는 클래스와 함수를 정의하는 데
+사용된다.</p>
+<p>또한, <code>import</code>는 외부 모듈을 가져오는 데 사용되고,
+<code>return</code>은 함수에서 값을 반환하는 데 활용된다. 이처럼
+예약어는 파이썬 코드의 흐름과 동작을 제어하는 핵심 요소로, 총 33개의
+예약어가 있으며 대소문자를 구분한다. 개발자는 예약어를 이해하고 적절히
+사용하여 오류를 방지하고 가독성을 높일 수 있다.</p>
+<p><strong>Python Keywords (33 total):</strong></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">and</th>
+<th style="text-align: center;">as</th>
+<th style="text-align: center;">assert</th>
+<th style="text-align: center;">break</th>
+<th style="text-align: center;">class</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">continue</td>
+<td style="text-align: center;">def</td>
+<td style="text-align: center;">del</td>
+<td style="text-align: center;">elif</td>
+<td style="text-align: center;">else</td>
+</tr>
+<tr>
+<td style="text-align: center;">except</td>
+<td style="text-align: center;">exec</td>
+<td style="text-align: center;">finally</td>
+<td style="text-align: center;">for</td>
+<td style="text-align: center;">from</td>
+</tr>
+<tr>
+<td style="text-align: center;">global</td>
+<td style="text-align: center;">if</td>
+<td style="text-align: center;">import</td>
+<td style="text-align: center;">in</td>
+<td style="text-align: center;">is</td>
+</tr>
+<tr>
+<td style="text-align: center;">lambda</td>
+<td style="text-align: center;">nonlocal</td>
+<td style="text-align: center;">not</td>
+<td style="text-align: center;">or</td>
+<td style="text-align: center;">pass</td>
+</tr>
+<tr>
+<td style="text-align: center;">print</td>
+<td style="text-align: center;">raise</td>
+<td style="text-align: center;">return</td>
+<td style="text-align: center;">try</td>
+<td style="text-align: center;">while</td>
+</tr>
+<tr>
+<td style="text-align: center;">with</td>
+<td style="text-align: center;">yield</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Remember:</strong> Keywords are case-sensitive!</p>
+<h2 id="배열array과-행렬matrix">배열(Array)과 행렬(Matrix)</h2>
+<h3 id="리스트list를-사용한-배열">리스트(List)를 사용한 배열</h3>
+<p><strong>( 1.3.1 ) 리스트(List)를 사용한 배열</strong></p>
+<p>파이썬에서 배열은 기본적으로 리스트로 구현된다. 리스트는 1차원 또는
+다차원 데이터를 표현할 수 있으며, 자료형에 제한이 없어 다양한 데이터
+타입을 혼합하여 저장할 수 있다. 배열은 파이썬에서 리스트(list)를
+이용하여 간단히 생성할 수 있다. 예를 들어, 1차원 배열은 리스트 형태로
+정의되며, 여러 데이터 타입을 저장할 수 있다.</p>
+<p>리스트(List)는 파이썬에서 가장 기본적이고 유연한 데이터 구조 중
+하나로, 데이터를 순서대로 저장할 수 있는 컬렉션이다. 리스트는
+대괄호([])로 선언하며, 각 요소는 쉼표(,)로 구분한다.</p>
+<p>리스트는 데이터 추가, 삭제, 수정 등 다양한 메서드를 제공하지만, 벡터
+연산이나 행렬 연산 등 복잡한 수학적 계산에는 적합하지 않다. 대규모
+데이터 연산에는 NumPy를 사용하는 것이 효율적이다.</p>
+<p><strong>① 리스트(list) 형식 및 특징</strong></p>
+<p>리스트는 다양한 자료형을 함께 저장할 수 있으며, 동적 크기 조정이
+가능하다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: center;"><strong>출력 결과</strong></th>
+<th style="text-align: left;"><strong>설명</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">array = [1, 2, 3, 4]<br />
+print(array)</td>
+<td style="text-align: center;">[1, 2, 3, 4]</td>
+<td style="text-align: left;">리스트를 사용하여 1차원 배열처럼 데이터를
+저장하였다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><p><span>1-3</span></p>
+<p>array_2d = [[1, 2], [3, 4]]<br />
+print(array_2d)</p></td>
+<td style="text-align: center;">[[1, 2],<br />
+[3, 4]]</td>
+<td style="text-align: left;">2차원 데이터를 생성하였다. 수학적 연산에는
+적합하지 않다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><p><span>1-3</span></p>
+<p>sum = array[0] + array[1]<br />
+print(sum)</p></td>
+<td style="text-align: center;">3</td>
+<td style="text-align: left;">리스트 요소를 인덱싱하여 접근하고, 간단한
+덧셈 연산을 수행하였다.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>다양한 리스트 선언 예제</strong></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: center;"><strong>출력 결과</strong></th>
+<th style="text-align: left;"><strong>설명</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">colors = [’red’, ’green’]<br />
+print(colors)</td>
+<td style="text-align: center;">[’red’, ’green’]</td>
+<td style="text-align: left;">비어 있지 않은 리스트를 선언하였다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><p><span>1-3</span></p>
+<p>empty_list = []<br />
+print(empty_list)</p></td>
+<td style="text-align: center;">[]</td>
+<td style="text-align: left;">비어 있는 리스트를 선언하였다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><p><span>1-3</span></p>
+<p>mixed_list = [’Hello’, 1, 2]<br />
+print(mixed_list)</p></td>
+<td style="text-align: center;">[’Hello’, 1, 2]</td>
+<td style="text-align: left;">문자열과 숫자가 혼합된 리스트를
+선언하였다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><p><span>1-3</span></p>
+<p>nest = [[’Hello’, ’World’], 1, 2]<br />
+print(nest)</p></td>
+<td style="text-align: center;">[[’Hello’, ’World’], 1, 2]</td>
+<td style="text-align: left;">리스트 안에 또 다른 리스트를 포함한 중첩
+리스트를 선언하였다.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>리스트 데이터 접근 예제</strong></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: center;"><strong>출력 결과</strong></th>
+<th style="text-align: left;"><strong>설명</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">a = [10, 20, 30, 40]<br />
+print(a[0])</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: left;">첫 번째 요소 접근 (인덱스는 0부터
+시작)</td>
+</tr>
+<tr>
+<td style="text-align: left;">print(a[-1])</td>
+<td style="text-align: center;">40</td>
+<td style="text-align: left;">음수 인덱스를 이용하여 마지막 요소
+접근</td>
+</tr>
+<tr>
+<td style="text-align: left;">sum = a[0] + a[1]<br />
+print(sum)</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: left;">리스트 요소 간 연산 수행</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>중첩 리스트(Nested List)에서의 데이터 접근</strong></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: center;"><strong>출력 결과</strong></th>
+<th style="text-align: left;"><strong>설명</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">a = [1, 2, [’a’, ’b’, [’Life’,
+’is’]]]<br />
+print(a[2][2][0])</td>
+<td style="text-align: center;">Life</td>
+<td style="text-align: left;">인덱스를 중첩하여 원하는 데이터를 추출할
+수 있다.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>② 중첩 리스트의 행렬화</strong></p>
+<p>중첩 리스트는 행(row)과 열(column) 구조를 가지므로 행렬(matrix)로
+간주할 수 있다.</p>
+<p><span class="math display">\[A =
+\begin{bmatrix}
+v_1 \\
+v_2 \\
+v_3
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7 \\
+1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7 \\
+1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7
+\end{bmatrix}\]</span></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: center;"><strong>출력 결과</strong></th>
+<th style="text-align: left;"><strong>설명</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">v1 = [1, 2, 3, 4, 5, 6, 7]<br />
+v2 = [1, 2, 3, 4, 5, 6, 7]<br />
+v3 = [1, 2, 3, 4, 5, 6, 7]<br />
+A = [v1, v2, v3]<br />
+print(A[0])</td>
+<td style="text-align: center;">[1, 2, 3, 4, 5, 6, 7]</td>
+<td style="text-align: left;">리스트 v1, v2, v3를 생성하고, 이를
+포함하는 2차원 리스트 A를 생성하였다. A[0]은 첫 번째 리스트 v1을
+반환한다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><p><span>1-3</span></p>
+<p>print(A[1])</p></td>
+<td style="text-align: center;">[1, 2, 3, 4, 5, 6, 7]</td>
+<td style="text-align: left;">두 번째 요소는 리스트 v2이다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><p><span>1-3</span></p>
+<p>print(A[2])</p></td>
+<td style="text-align: center;">[1, 2, 3, 4, 5, 6, 7]</td>
+<td style="text-align: left;">세 번째 요소는 리스트 v3이다.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="리스트list-슬라이싱slicing">리스트(List) 슬라이싱(Slicing)</h3>
+<p>슬라이싱(Slicing)은 리스트에서 특정 범위의 요소를 쉽게 추출할 수 있는
+강력한 기능이다. 슬라이싱을 사용하면 복잡한 반복문 없이 원하는 요소들을
+빠르고 간결하게 가져올 수 있다. 이 기능은 데이터 분석, 배열 처리, 문자열
+조작 등 다양한 분야에서 효율적으로 활용된다. 슬라이싱의 장점은 단순한
+문법으로 간편한 구문으로 데이터를 추출 가능하며, 시작, 끝, 간격을
+조절하여 다양한 데이터를 얻을 수 있는 유연성이 있다. 따라서 리스트의
+특정 범위를 빠르게 추출할 수 있어 대규모 데이터 처리에도 적합하다.</p>
+<p><strong>① 슬라이싱의 필요성</strong></p>
+<ul>
+<li><p>효율적인 데이터 추출: 반복문 없이 특정 범위의 데이터를 쉽게
+가져올 수 있다.</p></li>
+<li><p>코드 간결성: 긴 코드를 줄이고 가독성을 높인다.</p></li>
+<li><p>데이터 조작: 리스트의 일부를 다른 리스트로 저장하거나 수정할 수
+있다.</p></li>
+</ul>
+<p><strong>② 슬라이싱의 기본 형식</strong></p>
+<p><strong>기본 문법</strong></p>
+<blockquote>
+<p><code>list_name[start:end:step]</code></p>
+</blockquote>
+<ul>
+<li><p><strong>start:</strong> 시작 인덱스(포함), 기본값은 0</p></li>
+<li><p><strong>end:</strong> 끝 인덱스(포함하지 않음), 기본값은 리스트
+길이</p></li>
+<li><p><strong>step:</strong> 인덱스 간격(기본값은 1)</p></li>
+</ul>
+<p><strong>③ 코드 기초 예제</strong></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: center;"><strong>출력 결과</strong></th>
+<th style="text-align: left;"><strong>설명</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">a = [0,1,2,3,4,5,6,7,8,9]</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(a[2:5])</code></td>
+<td style="text-align: center;">[2, 3, 4]</td>
+<td style="text-align: left;">인덱스 2부터 4까지 요소 추출 (끝 인덱스
+미포함)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(a[:4])</code></td>
+<td style="text-align: center;">[0, 1, 2, 3]</td>
+<td style="text-align: left;">처음부터 3까지 요소 추출</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(a[5:])</code></td>
+<td style="text-align: center;">[5, 6, 7, 8, 9]</td>
+<td style="text-align: left;">인덱스 5부터 끝까지 추출</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(a[::2])</code></td>
+<td style="text-align: center;">[0, 2, 4, 6, 8]</td>
+<td style="text-align: left;">2칸 간격으로 요소 추출</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(a[-3:])</code></td>
+<td style="text-align: center;">[7, 8, 9]</td>
+<td style="text-align: left;">뒤에서부터 3개 요소 추출</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(a[::-1])</code></td>
+<td style="text-align: center;">[9,8,7,6,5,4,3,2,1,0]</td>
+<td style="text-align: left;">역순 추출</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>④ 데이터 분할</strong></p>
+<p>슬라이싱을 사용하여 데이터를 학습(train)과 테스트(test)로 나눌 수
+있다.</p>
+<div class="center">
+<table>
+<tbody>
+<tr>
+<td
+style="text-align: left;"><code>data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>train = data[:7]</code> # 처음
+7개</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>test = data[7:]</code> # 나머지</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(train)</code> # [1, 2, 3, 4,
+5, 6, 7]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(test)</code> # [8, 9, 10]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>⑤ 데이터 샘플링</strong></p>
+<div class="center">
+<table>
+<tbody>
+<tr>
+<td
+style="text-align: left;"><code>a = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sampled = a[::3]</code> # 3칸
+간격으로 추출</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(sampled)</code> # [0, 3, 6,
+9]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>⑥ 리스트 복사</strong></p>
+<p>슬라이싱을 사용하면 리스트의 일부 또는 전체를 복사할 수 있다.</p>
+<div class="sourceCode" id="cb10" data-language="Python"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>original <span class="op">=</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>]</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>copied <span class="op">=</span> original[:]</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(copied)  <span class="co"># [1,2,3,4,5]</span></span></code></pre></div>
+<h3 id="numpy와-배열과의-관계">NumPy와 배열과의 관계</h3>
+<p>NumPy는 배열 연산에 특화된 라이브러리로, 리스트보다 메모리 효율적이고
+연산 속도가 빠르다. NumPy 배열은 동일한 자료형만 저장 가능하며, 벡터화
+연산을 통해 간단한 코드로 복잡한 연산을 수행할 수 있다.</p>
+<p>NumPy 배열은 리스트보다 더 효율적이고 수학적으로 정교한 계산이
+가능하다. 특히 벡터화 연산은 루프 없이 요소별 연산을 수행할 수 있어
+코드가 간결해지고 성능이 향상된다. 리스트와 비교해 자료형 일관성과 연산
+최적화 측면에서 큰 장점을 제공한다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+<th style="text-align: left;"><strong>설명</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><table>
+<tbody>
+<tr>
+<td style="text-align: left;">import numpy as np</td>
+</tr>
+<tr>
+<td style="text-align: left;">array_np = np.array([1, 2, 3, 4])</td>
+</tr>
+<tr>
+<td style="text-align: left;">print(array_np)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left;">[1, 2, 3, 4]</td>
+<td style="text-align: left;">NumPy 배열을 생성. 리스트와 달리 동일한
+자료형만 저장 가능하다. 수학적 연산에 적합.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><table>
+<tbody>
+<tr>
+<td style="text-align: left;">array_2d = np.array([[1, 2], [3, 4]])</td>
+</tr>
+<tr>
+<td style="text-align: left;">print(array_2d)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left;"><table>
+<tbody>
+<tr>
+<td style="text-align: left;">[[1, 2],</td>
+</tr>
+<tr>
+<td style="text-align: left;"> [3, 4]]</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left;">2차원 데이터를 NumPy 배열로
+표현하였다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><table>
+<tbody>
+<tr>
+<td style="text-align: left;">result = array_np + 10</td>
+</tr>
+<tr>
+<td style="text-align: left;">print(result)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left;">[11, 12, 13, 14]</td>
+<td style="text-align: left;">벡터화 연산을 지원하여 각 요소에 10을
+더하는 연산을 수행하였다.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="행렬과-배열과의-관계">행렬과 배열과의 관계</h3>
+<p>행렬은 데이터를 2차원으로 구조화한 형태로, 선형대수 연산에 적합하다.
+NumPy는 행렬 연산을 위한 강력한 기능을 제공하며, <code>@</code> 연산자나
+<code>np.dot()</code> 함수를 사용하여 행렬 곱과 같은 복잡한 연산을
+간단히 처리할 수 있다. 행렬은 데이터를 2차원으로 구조화하여 다양한
+연산에 적합하다. NumPy 배열은 행렬과 유사하지만, 기본 연산이
+요소별(element-wise) 연산이라는 점에서 차이가 있다. 이를 통해 데이터
+분석, 머신러닝 등 다양한 분야에서 활용된다. NumPy의 행렬 연산 기능은
+복잡한 수학적 연산을 단순화하며 대규모 데이터를 효율적으로 처리할 수
+있다.</p>
+<p><strong>실습예제:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_03_arrays_matrices.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_03_arrays_matrices.py</a></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+<th style="text-align: left;"><strong>설명</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><table>
+<tbody>
+<tr>
+<td style="text-align: left;">A = np.array([[1, 2], [3, 4]])</td>
+</tr>
+<tr>
+<td style="text-align: left;">B = np.array([[5, 6], [7, 8]])</td>
+</tr>
+<tr>
+<td style="text-align: left;">C = A @ B</td>
+</tr>
+<tr>
+<td style="text-align: left;">print(C)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left;"><table>
+<tbody>
+<tr>
+<td style="text-align: left;">[[19 22]</td>
+</tr>
+<tr>
+<td style="text-align: left;"> [43 50]]</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left;">두 행렬 간의 행렬 곱을 수행하였다.
+<code>@</code> 연산자는 NumPy에서 행렬 곱을 나타낸다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><table>
+<tbody>
+<tr>
+<td style="text-align: left;">transpose = A.T</td>
+</tr>
+<tr>
+<td style="text-align: left;">print(transpose)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left;"><table>
+<tbody>
+<tr>
+<td style="text-align: left;">[[1 3]</td>
+</tr>
+<tr>
+<td style="text-align: left;"> [2 4]]</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left;">행렬의 전치를 수행하였다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><table>
+<tbody>
+<tr>
+<td style="text-align: left;">D = np.dot(A, B)</td>
+</tr>
+<tr>
+<td style="text-align: left;">print(D)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left;"><table>
+<tbody>
+<tr>
+<td style="text-align: left;">[[19 22]</td>
+</tr>
+<tr>
+<td style="text-align: left;"> [43 50]]</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left;"><code>np.dot()</code> 함수는 행렬 곱
+연산을 수행한다. <code>@</code> 연산자와 동일한 결과를 출력한다.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="튜플tuple">튜플(tuple)</h2>
+<h3 id="튜플이란">튜플이란?</h3>
+<p>리스트와 비슷한 순서형 자료형이지만, 리스트와 달리 생성된 항목을
+변경할 수 없는 순서형이다. 이러한 성질 때문에 데이터의 수정이 필요가
+없거나 데이터의 안정성을 보장해야 할 때 튜플을 사용한다. 데이터를
+중앙으로 변경해야 하는 경우에는 리스트를 사용하는 것이 좋다. 또한,
+문법적으로 리스트는 대괄호([])를 사용하여 생성하고, 튜플은 소괄호(())를
+사용하여 생성한다.</p>
+<h3 id="튜플tuple-형식">튜플(tuple) 형식</h3>
+<p>튜플의 형식은, 리스트에서는 대괄호 “[ ]” 를 이용하여 만들던 튜플을
+소괄호 “( )” 를 이용하여 만든다. ( ) 괄호 사용. 항목 추출하기는
+리스트처럼 숫자 인덱스를 사용하거나 콤마(,) 를 사용한다. 파이썬 튜플은
+리스트와 같이 순서가 있지만, 수정 불가능한 자료구조이다.</p>
+<p><strong>실습예제:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_04_tuples.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_04_tuples.py</a></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">T = ((10, 20), (30, 40), (50, 60))</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(T)</td>
+<td style="text-align: left;">T = ((10, 20), (30, 40), (50, 60))</td>
+</tr>
+<tr>
+<td style="text-align: left;">print(T[0][0])</td>
+<td style="text-align: left;">T[0][0] = 10</td>
+</tr>
+<tr>
+<td style="text-align: left;">T4 = (1, 2, (’a’, ’b’, (’Life’, 4)))</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(T4[2][2][0])</td>
+<td style="text-align: left;">Life</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="튜플tuple-특징">튜플(tuple) 특징</h3>
+<p>튜플의 요소 값은 변경하거나 삭제할 수 없다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code>T = ((10, 20), (30, 40))
+T[0][0] = 55</code></pre></td>
+<td style="text-align: left;"><pre><code>TypeError Traceback (most recent call last)
+Cell In[3], line 2
+ 1 T = ((10, 20), (30, 40))
+----&gt; 2 T[0][0] = 55
+
+TypeError: &#39;tuple&#39; object does not support item assignment</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>값이 하나만 있는 튜플은 콤마 하나 꼭 붙여야 한다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code>T = (55,)
+print(T[0])</code></pre></td>
+<td style="text-align: left;"><pre><code>55</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code>T = (55)
+print(T[0])</code></pre></td>
+<td style="text-align: left;"><pre><code>TypeError Traceback (most recent call last)
+Cell In[5], line 2
+ 1 T = (55)
+----&gt; 2 print(T[0])
+
+TypeError: &#39;int&#39; object is not subscriptable</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="튜플tuple-예제">튜플(tuple) 예제</h3>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">my_list = [1, 2, 3, 4, 5]</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">리스트 생성</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(my_list, my_list)</td>
+<td style="text-align: left;">my_list [1, 2, 3, 4, 5]</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">my_tuple = (1, 2, 3, 4, 5)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">튜플 생성</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(my_tuple, my_list)</td>
+<td style="text-align: left;">my_tuple (1, 2, 3, 4, 5)</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">my_list[0] = 6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">리스트 값 변경</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print("my_list=", my_list)</td>
+<td style="text-align: left;">my_list= [6, 2, 3, 4, 5]</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">my_list.append(6)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">리스트 값 추가</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(my_list.append(6), my_list)</td>
+<td style="text-align: left;">None [6, 2, 3, 4, 5, 6]</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">my_tuple[0] = 6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">튜플 값 변경 - 오류 발생</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print("my_tuple[0]", my_list)</td>
+<td style="text-align: left;">TypeError Traceback (most recent call
+last)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cell In[6], line 18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">—-&gt; my_tuple[0] = 6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">TypeError: ’tuple’ object does not support
+item assignment</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">my_tuple.append(6)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">튜플 값 추가 - 오류 발생</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print("my_tuple.append(6)", my_list)</td>
+<td style="text-align: left;">TypeError: ’tuple’ object has no attribute
+’append’</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="튜플tuple-slicing-사용">튜플(tuple) slicing : “:” 사용</h3>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">T = (1, 2, 3, 4, 5, 6, 7)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">T1 = T[0:3] ; T2 = T[0:-3]</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">T3 = T[:] ; T4 = T[5:] ; T5 = T[:5]</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(’T :’, T)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(’T[0:3] :’, T1)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(’T[0:-3] :’, T2)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(’T[:] :’, T3)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(’T[5:] :’, T4)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(’T[:5] :’, T5)</td>
+<td style="text-align: left;">T : (1, 2, 3, 4, 5, 6, 7)</td>
+</tr>
+<tr>
+<td style="text-align: left;">T[0:3] : (1, 2, 3)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">T[0:-3] : (1, 2, 3, 4)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">T[:] : (1, 2, 3, 4, 5, 6, 7)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">T[5:] : (6, 7)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">T[:5] : (1, 2, 3, 4, 5)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="튜플tuple-extended-slicing-사용">튜플(tuple) Extended slicing :
+":" 사용</h3>
+<p>A[:] , A[1:2:3] , A[::-1] 등으로 배열의 index에 접근하는 방법이다.
+A(a:b:c)의 의미는 index a부터 index b까지 c의 간격으로 배열을 만드는
+것이다. 만약 A가 없으면, 즉 A(:b:c) 이라면 처음부터 b까지 c의 간격으로
+배열을 만드는 것이다. A가 없으면, 즉 A(a::c) 이라면 index a부터 끝까지
+c의 간격으로 배열을 만드는 것이다. 예를 들어 a가 양수라면 마지막
+index까지, c가 음수라면 첫 index까지 거꾸로 배열을 만드는 것이다.
+마지막으로 a가 없으면, 즉 A(::c) 이라면 index 0부터 index b까지 c의
+간격으로 배열을 만드는 것이다. Extended slicing ":" 사용하여 파이썬
+프로그램을 해 보자.</p>
+<p><strong>실습예제:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_04_06_tuple_extended_slicing.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_04_06_tuple_extended_slicing.py</a></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">A = [0, 1, 2, 3, 4, 5, 6]</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">A_copy = A[:] # A[:] - 배열 전체를
+복사</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># A[1:2:3] 인덱스 1부터 2까지 3의 간격으로
+추출</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">A_slice_1 = A[1:2:3]</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">A_reverse = A[::-1] # A[::-1] - 배열을
+역순으로 추출</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(f"A_copy: {A_copy}")</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(f"A_slice_1: {A_slice_1}")</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(f"A_reverse: {A_reverse}")</td>
+<td style="text-align: left;">A_copy: [0, 1, 2, 3, 4, 5, 6]</td>
+</tr>
+<tr>
+<td style="text-align: left;">A_slice_1: [1]</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">A_reverse: [6, 5, 4, 3, 2, 1, 0]</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="사전dictionary">사전(Dictionary)</h2>
+<h3 id="딕셔너리dictionary">딕셔너리(dictionary)</h3>
+<div class="center">
+<p>- 16 -</p>
+</div>
+<p><strong>사전 (Dictionary)</strong></p>
+<p>딕셔너리는 키(key)와 값(value)의 쌍으로 데이터를 저장하는 자료구조로,
+데이터를 빠르게 검색하거나 조작할 때 유용하다. 딕셔너리는 중괄호 {}를
+사용하며, 키는 고유해야 하고 변경 불가능한 자료형 (예: 문자열, 숫자)을
+사용한다. 값은 어떠한 자료형도 가능하다. 딕셔너리는 데이터를 추가, 삭제,
+업데이트와 같은 작업을 효율적으로 처리한다. 데이터를 체계적으로 저장하고
+검색하는 데 적합하다.</p>
+<p>딕셔너리는 다음과 같은 특징을 가진다.</p>
+<ol>
+<li><p><strong>키(key):</strong> 변경 불가능한(immutable) 데이터 타입만
+사용할 수 있다. 예: 문자열, 숫자, 튜플.</p></li>
+<li><p><strong>값(value):</strong> 모든 데이터 타입을 허용한다.</p></li>
+<li><p><strong>속도:</strong> 데이터 검색과 수정 속도가 빠르다.</p></li>
+<li><p><strong>가변성:</strong> 딕셔너리는 동적으로 수정, 추가, 삭제가
+가능하다.</p></li>
+</ol>
+<h3 id="딕셔너리dictionary-예제">딕셔너리(dictionary) 예제</h3>
+<p><strong>실습 코드:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_05_dictionary.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_05_dictionary.py</a></p>
+<div class="sourceCode" id="cb17" data-language="Python"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dictionary creation</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>student <span class="op">=</span> {</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;name&quot;</span>: <span class="st">&quot;Alice&quot;</span>,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;age&quot;</span>: <span class="dv">25</span>,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;major&quot;</span>: <span class="st">&quot;Engineering&quot;</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Value access</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(student[<span class="st">&quot;name&quot;</span>])  <span class="co"># Output: Alice</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Value modification</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>student[<span class="st">&quot;age&quot;</span>] <span class="op">=</span> <span class="dv">26</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Adding new key-value pair</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>student[<span class="st">&quot;grade&quot;</span>] <span class="op">=</span> <span class="st">&quot;A&quot;</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Deleting a key</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="kw">del</span> student[<span class="st">&quot;major&quot;</span>]</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(student)  <span class="co"># {&#39;name&#39;: &#39;Alice&#39;, &#39;age&#39;: 26, &#39;grade&#39;: &#39;A&#39;}</span></span></code></pre></div>
+<h2 id="수학-연산자-및-numpy-비교">수학 연산자 및 NumPy 비교</h2>
+<h3 id="파이썬의-기본-수학-연산자와-numpy-연산-비교">파이썬의 기본 수학
+연산자와 NumPy 연산 비교</h3>
+<p>스칼라 산술 연산과 요소 순서연산이다. 곱( * ), 제곱( ** ), 나눗셈( /
+) 등의 기본 연산은 파이썬에서 직접 사용할 수 있다. 정수형 나눗셈은 몫과
+나머지를 구분한다. 예를 들어 몫을 구하려면 // 연산자를 사용하고,
+나머지를 구하려면 % 연산자를 사용한다. 나머지를 출력하려면 정수에 %를
+입력하고 나누려는 값을 입력하면 된다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>Operation</strong></th>
+<th style="text-align: left;"><strong>Python</strong></th>
+<th style="text-align: left;"><strong>NumPy</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Addition</td>
+<td style="text-align: left;"><code>a + b</code></td>
+<td style="text-align: left;"><code>np.add(a, b)</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Multiplication</td>
+<td style="text-align: left;"><code>a * b</code></td>
+<td style="text-align: left;"><code>np.multiply(a, b)</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Division</td>
+<td style="text-align: left;"><code>a / b</code></td>
+<td style="text-align: left;"><code>np.divide(a, b)</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Power</td>
+<td style="text-align: left;"><code>a ** b</code></td>
+<td style="text-align: left;"><code>np.power(a, b)</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Square root</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;"><code>np.sqrt(a)</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Matrix mult.</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;"><code>np.dot(a, b)</code> or
+<code>a @ b</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="python-과-numpy의-기본-연산">Python 과 NumPy의 기본 연산</h3>
+<p><strong>실습 코드:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_06_operators_numpy.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_06_operators_numpy.py</a></p>
+<h3 id="python-과-numpy의-배열-연산">Python 과 NumPy의 배열 연산</h3>
+<p>Python의 기본 연산자는 리스트를 사용할 때 요소별 연산을 자동으로
+수행하지 않는다. 대신, 반복문이나 리스트 컴프리헨션을 사용해야 한다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td
+style="text-align: left;"><code># Python 기본 연산 (리스트)</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td
+style="text-align: left;"><code>a = [1, 2, 3]; b = [4, 5, 6]</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td
+style="text-align: left;"><code>c = [a[i] + b[i] for i in range(len(a))]</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td
+style="text-align: left;"><code>print(c) # 출력: [5, 7, 9]</code></td>
+<td style="text-align: left;"><code>[5, 7, 9]</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>NumPy는 벡터 연산을 지원하여 반복문 없이도 배열의 요소별 연산을
+간단히 수행할 수 있다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code># NumPy 배열 연산</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>import numpy as np</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td
+style="text-align: left;"><code>a = np.array([1, 2, 3]); b = np.array([4, 5, 6])</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td
+style="text-align: left;"><code>c = a + b; print(c) # 출력: [5, 7, 9]</code></td>
+<td style="text-align: left;"><code>[5, 7, 9]</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Python lists vs NumPy arrays for large-scale
+operations:</strong></p>
+<div class="sourceCode" id="cb18" data-language="Python"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Python list operation</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">1_000_000</span>))</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">1_000_000</span>))</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> time.time()</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> [a[i] <span class="op">+</span> b[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(a))]</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;List operation:&quot;</span>, time.time() <span class="op">-</span> start)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co"># NumPy array operation</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>a_np <span class="op">=</span> np.arange(<span class="dv">1_000_000</span>)</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>b_np <span class="op">=</span> np.arange(<span class="dv">1_000_000</span>)</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> time.time()</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>c_np <span class="op">=</span> a_np <span class="op">+</span> b_np</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;NumPy operation:&quot;</span>, time.time() <span class="op">-</span> start)</span></code></pre></div>
+<p><strong>Result:</strong> NumPy is significantly faster (often
+10-100x) for numerical operations!</p>
+<p>Python 리스트의 연산에서는 더하기(+)나 반복하기(*) 같은 연산자가
+적용된다. 여기서 덧셈, 곱셈은 원래 수학적인 연산이 아니라 다른 의미의
+연산임을 주의하자. 덧셈 연산은 벡터의 각 요소를 더하는 것이 아니라
+리스트에 새로운 데이터를 덧붙이는 연산자는 반복하는 연산자는
+반복하기이다. 리스트 크기가 달라진다. 따라서 python에서 수치해석용으로
+활용할 때는 numpy를 사용하는 것이 바람직하다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>v1 = [1, 2, 3]</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>v1 * 3</code></td>
+<td
+style="text-align: left;"><code>[1, 2, 3, 1, 2, 3, 1, 2, 3]</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>NumPy에서도 단일 값 연산이 가능하지만, 주로 배열과 함께 사용한다.
+numpy를 사용한 스칼라(scalar), 벡터(vector) 연산의 예는 아래와 같다.</p>
+<p><strong>numpy를 사용한 벡터(vector) + 연산:</strong></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>import numpy as np</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>v1 = np.array([1,2,3])</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>v2 = np.array([1,2,3])</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(v1 + v2)</code></td>
+<td style="text-align: left;"><code>[2 4 6]</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>numpy를 사용한 벡터(vector) 스칼라 곱하기 연산:</strong></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>import numpy as np</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>v1 = np.array([1,2,3])</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>v2 = np.array([1,2,3])</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(3*v1 + 2*v2)</code></td>
+<td style="text-align: left;"><code>[ 5 10 15]</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Python 기본 연산자는 행렬 곱 연산을 지원하지 않는다. NumPy는 @ 연산자
+또는 np.dot()을 사용하여 행렬 곱을 수행할 수 있다. numpy를 사용한 두
+벡터(vector) 내적 계산은 sum(v1*v2) 또는 np.dot(v1,v2)를 사용하면 된다.
+matrix [A], matrix [B] multiplication 경우 np.dot(A,B)를 사용한다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>import numpy as np</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>v1 = np.array([1,2,3])</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>v2 = np.array([1,2,3])</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(sum(v1*v2))</code></td>
+<td style="text-align: left;"><code>14</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print(np.dot(v1,v2))</code></td>
+<td style="text-align: left;"><code>14</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="반복-계산">반복 계산</h2>
+<h3 id="반복계산이란">반복계산이란?</h3>
+<p>반복 계산은 동일한 연산을 여러 번 수행하여 결과를 얻는 과정으로,
+수학적 문제 해결, 데이터 처리, 과학적 계산 등에서 필수적이다. Python은
+반복문(for, while)과 벡터화 연산을 통해 효율적인 반복 계산을 구현할 수
+있으며, 이는 대규모 데이터 처리와 복잡한 알고리즘 설계에 중요한 역할을
+한다. 반복문을 이해하고 이를 적절히 활용하는 능력은 프로그래밍의 핵심
+역량이다. 특히, 큰 행렬의 계산이나 반복 구조를 처리하는 과정을
+자동화하여 효율성을 높인다.</p>
+<p><strong>① 특징:</strong></p>
+<p>C/C++/Matlab/Java 언어처럼 파이썬에서도 for 문으로 반복 계산이
+이루어진다. if, 서술문이나 기타 들여쓰기 된 블록처럼 for 문도 얼마든지
+그 안에 포함된 코드를 작성할 수 있다.</p>
+<p><strong>② for 구문:</strong></p>
+<p>for statement는 반복문 중 하나로, 주어진 iterable(반복 가능한) 객체의
+모든 요소에 대해 반복하여 작업을 수행하는 데 사용된다. for 문은 주로
+리스트, 튜플, 딕셔너리, 문자열과 같은 iterable(반복 가능한) 객체를 다룰
+때 많이 사용된다. for 문은 다음과 같은 구조를 가지게 된다. variable은
+반복문에서 현재 처리 중인 요소(element)를 나타내는 변수, iterable은
+반복문이 실행될 iterable 객체. 만약 특정 횟수만큼 실행시키고 싶다면,
+목록 부분에 range() 함수를 사용하면 된다.</p>
+<div class="center">
+<pre><code>for variable in iterable:</code></pre>
+</div>
+<p><strong>③ 범위(range)를 사용:</strong></p>
+<p>for 문을 사용할 때, 범위(range)를 사용하여 어떻게 변수가 추출되어
+반복 계산하는지 아래 예를 들어 설명한다. 반복문을 사용하였다. 시작에 for
+입력하여 그 뒤의 문자를 반복해서, 반복문을 사용될 때 range라는 범위를
+입력하면 범위의 숫자를 반복해서 계산하게 된다. 만약 range(1,4), 라면
+1에서 4미만의 수를 반복하여 사용한다. 만약 1부터 4까지의 숫자를 사용하고
+싶다면 range(1,5) 또는 range(0,4)를 사용하여 된다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code># 첫 번째 for 루프: range() 함수를 사용하여 1부터 3까지 반복
+# range(1, 4)는 1, 2, 3을 생성 (4는 포함되지 않음)
+for val in range(1, 4):
+    print(val)  # 현재 반복 중(val)을 출력</code></pre></td>
+<td style="text-align: left;"><pre><code>1
+2
+3</code></pre></td>
+</tr>
+<tr>
+<td style="text-align: left;"><pre><code># 두 번째 for 루프: 리스트 [1, 2, 3, 4]를 순회
+# 리스트의 각 요소를 변수 i에 할당
+for i in [1, 2, 3, 4]:
+    print(i)  # 현재 리스트 요소(i)를 출력</code></pre></td>
+<td style="text-align: left;"><pre><code>1
+2
+3
+4</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>④ 반복문을 이용한 합 계산</strong></p>
+<p>for 반복문을 사용하여 1부터 10까지의 숫자를 순차적으로 더했다. 이
+방식은 간단한 반복 계산에 적합하며, 원하는 범위 내에서 반복 연산을
+수행한다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code># 1부터 10까지의 합 계산
+total = 0
+for i in range(1, 11):
+    total += i
+
+print(&quot;1부터 10까지의 합:&quot;, total)</code></pre></td>
+<td style="text-align: left;"><pre><code>1부터 10까지의 합: 55</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>⑤ 리스트를 이용한 반복 계산</strong></p>
+<p>리스트에 저장된 각 요소를 반복문을 통해 제곱한 뒤 새로운 리스트에
+저장하였다. 반복 계산은 리스트와 같은 데이터 구조에서도 간단히 구현할 수
+있다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code># 리스트 요소의 제곱 계산
+numbers = [1, 2, 3, 4, 5]
+
+squared = []
+for num in numbers:
+    squared.append(num ** 2)
+
+print(&quot;리스트의 제곱:&quot;, squared)</code></pre></td>
+<td style="text-align: left;"><pre><code>리스트의 제곱: [1, 4, 9, 16, 25]</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>⑥ 예제: 0부터 n까지의 홀수 합</strong></p>
+<p>1부터 n까지의 숫자를 다 더하고 싶다면 문자 하나를 0으로 정의해 놓고
+for 반복문에 범위를 range(1,n+1)로 입력한다. 그런 다음 0으로 정의해 놓은
+문자에 반복되는 문자를 더해주면 1부터 n까지의 합을 구할 수 있다.
+여기에서는 0부터 n까지 홀수의 합을 계산하는 프로그램을 만들어보자.
+n=100인 경우 그 결과는 어떻게 되는지 확인해본다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code>print(&quot;0부터 n까지의 홀수 합을 계산.&quot;)
+print(&quot;n을 입력하세요.&quot;)
+
+# 입력받은 값을 정수로 변환하여 변수 n에 저장
+n = int(input())
+
+# 합계를 저장할 변수 초기화
+val = 0
+
+# 0부터 n까지 반복
+# i는 0부터 n까지 순서대로 값을 가짐
+# i가 홀수일 때만 더하기 (i % 2 == 1 이면 홀수)
+for i in range(0, n + 1):
+    if i % 2 == 1:
+        val = val + i   # 홀수일 때 val에 i를 더함
+
+print(&quot;n까지의 홀수 합 :&quot;, val)</code></pre></td>
+<td style="text-align: left;"><pre><code>0부터 n까지의 홀수 합을 계산.
+n을 입력하세요.
+100
+n까지의 홀수 합 : 2500</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>⑦ 예제: 0부터 n까지의 짝수 합</strong></p>
+<p>0에서 n까지 짝수 합을 계산하는 함수를 만들고 n=100인 경우 그 결과는
+어떻게 되는가?</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code># 사용자에게 알림 메시지 출력
+print(&quot;0부터 n까지의 짝수 합을 계산.&quot;)
+
+# 사용자로부터 n 값을 입력받음
+print(&quot;n을 입력하세요.&quot;)
+
+# 입력받은 값을 정수로 변환하여 변수 n에 저장
+n = int(input())
+
+# 합계를 저장할 변수 초기화
+val = 0
+
+# 0부터 n까지 반복
+# i는 0부터 n까지 순서대로 값을 가짐
+# i가 짝수(i % 2로 나눈 나머지가 0이면 짝수)
+for i in range(0, n + 1):
+    if i % 2 == 0:
+        val = val + i   # 짝수일 때 val에 i를 더함
+
+# 계산된 짝수 합을 출력
+print(&quot;n까지의 짝수 합 :&quot;, val)</code></pre></td>
+<td style="text-align: left;"><pre><code>0부터 n까지의 짝수 합을 계산.
+n을 입력하세요.
+100
+n까지의 짝수 합 : 2550</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>⑧ 예제: 함수값 이용</strong></p>
+<p>반복문을 사용하여 함수값을 연속적으로 구해보자. 임의로 정의한 <span
+class="math inline">\(f(x) = x^2\)</span> 에 값을 0부터 4까지의 수를
+대입하여 구하기 위해서는 값에 들어갈 숫자의 범위를 정해준 뒤 반복한다.
+프로그램을 프린트하면 4개가 숫자를 차례대로 넣은 함수값이 나오게 된다.
+변수 <span class="math inline">\(x\)</span>의 값을 정해준 뒤 다음 range
+용어를 활용하여 값 도출하는 것이다. range 함수를 통해 반복문에 수를 차례
+반복하여 <span class="math inline">\(f(x)=x^2\)</span> 값을
+계산한다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code># 함수 정의: 입력값 x를 제곱하여 반환하는 함수 f(x)
+def f(x):
+    return x**2  # x를 제곱한 값을 반환
+
+# 반복문: range(0, 4)를 이용하여 0부터 3까지 반복
+for x in range(0, 4):  # x는 0, 1, 2, 3의 값을 순서대로 가짐
+    print(f(x))  # 함수 f(x)의 결과(제곱값)를 출력</code></pre></td>
+<td style="text-align: left;"><pre><code>0
+1
+4
+9</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>( 1.7.3 ) while 문을 이용한 반복 계산</strong></p>
+<p>while 문은 조건이 참(True)인 동안 계속해서 반복 실행되는 루프를
+제공한다. 조건이 거짓(False)이 되면 루프가 종료된다. 주로 반복 횟수가
+명확하지 않거나, 특정 조건을 만족할 때까지 실행이 필요한 경우에
+사용된다. 조건식은 반복 실행자를 결정하는 논리식이다. True일 때 반복이
+진행된다. 반복 실행할 코드: 조건식이 참일 때 실행되는 코드를
+블록이다.</p>
+<div class="center">
+<hr />
+<p><code>while 조건식:</code></p>
+<p><code> 반복 실행할 코드</code></p>
+<hr />
+</div>
+<p>이 코드의 작동 방식은 사용자가 입력한 값 n까지 1부터 반복하면서
+합계를 계산한다. while 문의 조건이 i &lt;= n일 때 루프가 반복되므로, i가
+n을 초과하면 루프가 종료된다. 이 방식은 조건 기반 반복의 전형적인 사용
+예이다.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"># 1부터 n까지의 합을 계산</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># 프로그램 시작 메시지 출력</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print("1부터 n까지의 합을 계산")</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># 사용자로부터 n 값을 입력받음</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># 입력값을 정수로 변환하여 n에 저장</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">n = int(input("n 값을 입력: "))</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># 반복에 필요한 초기 변수 설정</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">i = 1 # 반복 변수, 1부터 시작</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">total = 0 # 합계를 저장할 변수</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># while 문을 이용한 반복</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># i가 n 이하일 때 루프를 실행</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># total 변수에 i 값을 더함 (누적
+계산)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># 반복 변수를 1 증가시킴 (루프 탈출 조건
+형성)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">while i &lt;= n:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1부터 n까지의 합을 계산.</td>
+</tr>
+<tr>
+<td style="text-align: left;">total += i</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">n 값을 입력: 100</td>
+</tr>
+<tr>
+<td style="text-align: left;">i += 1</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1부터 100까지의 합은 5050.</td>
+</tr>
+<tr>
+<td style="text-align: left;"># 최종 결과 출력</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(f"1부터 {n}까지의 합은
+{total}.")</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<h2 id="조건-계산">조건 계산</h2>
+<h3 id="if-else-구문"> if   else 구문</h3>
+<p>if   else 구문은 조건에 따라 프로그램이 서로 다른 코드를 실행하도록
+제어하는 조건문이다. if 문은 조건이 참(True)일 경우 실행되는 코드 블록을
+지정하고, else 문은 if 조건이 거짓(False)일 경우 실행되는 대체 코드를
+지정한다. 함수 안의 코드 블록은 들여쓰기로 표시한다. 프로그래밍 언어에
+따라 들여쓰기를 블록의 실행여부로 구분하거나 중괄호 {} 로 블록을
+구분한다. C/C++/Java 등의 언어는 {}를 사용하여 블록을 정의하고, Matlab은
+if, elseif, else, end 구조를 가진다. Python은 들여쓰기를 통해 코드
+블록을 구분하며, 들여쓰기 수준이 같은 코드만 동일 블록으로 인식된다.</p>
+<div class="center">
+<hr />
+</div>
+<pre><code>if 조건식:
+    # 조건이 참일 때 실행할 코드
+else:
+    # 조건이 거짓일 때 실행할 코드</code></pre>
+<div class="center">
+<hr />
+</div>
+<h3 id="다중-조건문-if-else-else-구문">다중 조건문 (if   else   else
+구문)</h3>
+<p>if   elif   else 구문은 다중 조건을 처리하기 위해 사용된다. 여러 조건
+중 하나만 만족하면 해당 블록의 코드가 실행되고, 이후 조건 검사는
+중단된다.</p>
+<div class="center">
+<hr />
+</div>
+<pre><code>if 조건식1:
+    # 조건식1이 참일 때 실행할 코드
+
+elif 조건식2:
+    # 조건식1이 거짓이고, 조건식2가 참일 때 실행할 코드
+
+elif 조건식3:
+    # 조건식1과 조건식2가 거짓이고, 조건식3이 참일 때 실행할 코드
+
+else:
+    # 위의 모든 조건이 거짓일 때 실행할 코드</code></pre>
+<div class="center">
+<hr />
+</div>
+<h3 id="if-구조-예문">if 구조 예문</h3>
+<p><strong>실습 코드:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_08_conditionals.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_08_conditionals.py</a></p>
+<p>① 예제 코드: 숫자가 짝수인지 홀수인지 판별하기</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code># 사용자로부터 숫자를 입력받음
+
+# 입력값을 정수로 변환
+num = int(input(&quot;숫자를 입력하세요: &quot;))
+
+# if ~ else 구문을 이용해 짝수와 홀수 판별
+
+# 숫자를 2로 나눈 나머지가 0이면 짝수
+if num % 2 == 0:
+    print(f&quot;{num}은 짝수입니다.&quot;)
+else:
+    print(f&quot;{num}은 홀수입니다.&quot;)</code></pre></td>
+<td style="text-align: left;"><pre><code>숫자를 입력하세요: 5
+5은 홀수입니다.</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 class="unnumbered" id="리스트와-조건문을-이용한-다중-조건-계산">②
+리스트와 조건문을 이용한 다중 조건 계산</h3>
+<p>Python에서는 리스트와 조건문을 결합하여 여러 데이터를 효율적으로
+처리할 수 있다. 리스트 <code>scores</code>에 있는 각 점수를 조건문으로
+평가하여 등급(<code>grades</code>) 리스트에 저장하였다. 반복문과
+조건문을 조합하여 다중 조건 계산을 수행하는 예제이다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code># 학생 점수와 등급 계산
+scores = [95, 82, 67, 58, 89]
+grades = []
+
+for score in scores:
+    if score &gt;= 90:
+        grades.append(&#39;A&#39;)
+    elif score &gt;= 80:
+        grades.append(&#39;B&#39;)
+    elif score &gt;= 70:
+        grades.append(&#39;C&#39;)
+    else:
+        grades.append(&#39;D&#39;)
+
+print(&quot;점수:&quot;, scores)
+print(&quot;등급:&quot;, grades)</code></pre></td>
+<td style="text-align: left;"><pre><code>점수: [95, 82, 67, 58, 89]
+등급: [&#39;A&#39;, &#39;B&#39;, &#39;D&#39;, &#39;D&#39;, &#39;B&#39;]</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 class="unnumbered" id="조건-표현식을-이용한-간단한-조건-계산">③ 조건
+표현식을 이용한 간단한 조건 계산</h3>
+<p>Python은 조건 표현식(삼항 연산자)을 사용하여 간결한 조건 계산을
+구현할 수 있다. 조건 표현식은 상황에 따라 값을 반환할 수 있으며, 조건을
+한 줄로 표현할 수 있다. 단일 라인으로 조건 계산을 구현할 때 매우
+유용하다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code># 숫자가 양수, 음수 또는 0인지 판별
+number = -5
+
+result = &quot;양수&quot; if number &gt; 0 else &quot;음수&quot; if number &lt; 0 else &quot;0&quot;
+
+print(f&quot;숫자: {number}, 결과: {result}&quot;)</code></pre></td>
+<td style="text-align: left;"><pre><code>숫자: -5, 결과: 음수</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 class="unnumbered" id="비교연산자">( 1.8.4 ) 비교연산자</h3>
+<p>비교 연산자는 두 값을 비교하여 참(True) 또는 거짓(False)을 반환한다.
+이 연산자는 조건문이나 반복문에서 조건을 설정하는 데 주로 사용된다. 주요
+비교 연산자는 다음과 같다.</p>
+<p>== : 값이 동일한지 확인한다.<br />
+!= : 값이 서로 다른지 확인한다.<br />
+&gt; : 왼쪽 값이 오른쪽 값보다 큰지 확인한다.<br />
+&lt; : 왼쪽 값이 오른쪽 값보다 작은지 확인한다.<br />
+&gt;= : 왼쪽 값이 오른쪽 값보다 크거나 같은지 확인한다.<br />
+&lt;= : 왼쪽 값이 오른쪽 값보다 작거나 같은지 확인한다.</p>
+<p>이러한 비교 연산자는 조건문(if)과 반복문(while)에서 조건을 설정할 때
+자주 사용된다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Operator</strong></th>
+<th style="text-align: left;"><strong>Meaning</strong></th>
+<th style="text-align: center;"><strong>Example</strong></th>
+<th style="text-align: center;"><strong>Result</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">==</td>
+<td style="text-align: left;">Equal</td>
+<td style="text-align: center;">5 == 5</td>
+<td style="text-align: center;">True</td>
+</tr>
+<tr>
+<td style="text-align: center;">!=</td>
+<td style="text-align: left;">Not equal</td>
+<td style="text-align: center;">5 != 3</td>
+<td style="text-align: center;">True</td>
+</tr>
+<tr>
+<td style="text-align: center;">&gt;</td>
+<td style="text-align: left;">Greater than</td>
+<td style="text-align: center;">5 &gt; 3</td>
+<td style="text-align: center;">True</td>
+</tr>
+<tr>
+<td style="text-align: center;">&gt;=</td>
+<td style="text-align: left;">Greater or equal</td>
+<td style="text-align: center;">5 &gt;= 5</td>
+<td style="text-align: center;">True</td>
+</tr>
+<tr>
+<td style="text-align: center;">&lt;</td>
+<td style="text-align: left;">Less than</td>
+<td style="text-align: center;">3 &lt; 5</td>
+<td style="text-align: center;">True</td>
+</tr>
+<tr>
+<td style="text-align: center;">&lt;=</td>
+<td style="text-align: left;">Less or equal</td>
+<td style="text-align: center;">3 &lt;= 5</td>
+<td style="text-align: center;">True</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Usage:</strong></p>
+<ul>
+<li><p>Conditional statements (if, elif, else)</p></li>
+<li><p>While loops</p></li>
+<li><p>Boolean expressions</p></li>
+</ul>
+<h3 class="unnumbered" id="예제-코드-비교-연산자-사용">① 예제 코드: 비교
+연산자 사용</h3>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"># 두 숫자를 입력받아 비교</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">a = int(input("첫 번째 숫자를 입력:
+"))</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">b = int(input("두 번째 숫자를 입력:
+"))</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># a와 b가 같은지 비교</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(f"{a} == {b}: {a == b}")</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># a와 b가 다른지 비교</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(f"{a} != {b}: {a != b}")</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># a가 b보다 큰지 비교</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(f"{a} &gt; {b}: {a &gt; b}")</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># a가 b보다 크거나 같은지 비교</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(f"{a} &gt;= {b}: {a &gt;= b}")</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># a가 b보다 작은지 비교</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(f"{a} &lt; {b}: {a &lt; b}")</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># a가 b보다 작거나 같은지 비교</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(f"{a} &lt;= {b}: {a &lt;= b}")</td>
+<td style="text-align: left;">첫 번째 숫자를 입력: 1</td>
+</tr>
+<tr>
+<td style="text-align: left;">두 번째 숫자를 입력: 5</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">1 == 5: False</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">1 != 5: True</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">1 &gt; 5: False</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">1 &gt;= 5: False</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">1 &lt; 5: True</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">1 &lt;= 5: True</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="입출력">입출력</h2>
+<h3 class="unnumbered" id="키보드로-입력-및-화면으로-출력">( 1.9.1 )
+키보드로 입력 및 화면으로 출력</h3>
+<p>키보드 입력과 화면 출력은 Python의 <code>input()</code> 함수는
+사용자가 입력한 값을 문자열로 반환한다. <code>input()</code>으로
+사용자의 이름과 나이를 입력받고, <code>print()</code>로 나이, 이름을
+출력할 수 있다. 사용자와 상호작용을 수행하기 위해 <code>input()</code>을
+사용하여 명시적으로 값을 반환받고 출력할 수 있다.</p>
+<h3 id="키보드-입력-및-화면으로-출력">키보드 입력 및 화면으로 출력</h3>
+<p><a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_09_io.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_09_io.py</a></p>
+<p><strong>Overview</strong></p>
+<blockquote>
+<p>This section explains methods for handling data input and output in
+Python.</p>
+</blockquote>
+<p><strong>Keyboard Input and Screen Output:</strong></p>
+<div class="sourceCode" id="cb42" data-language="Python"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Input from user</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>name <span class="op">=</span> <span class="bu">input</span>(<span class="st">&quot;Enter your name: &quot;</span>)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>age <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>(<span class="st">&quot;Enter your age: &quot;</span>))</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Output to screen</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Hello, </span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">.&quot;</span>)</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;You are </span><span class="sc">{</span>age<span class="sc">}</span><span class="ss"> years old.&quot;</span>)</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Example:</span></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Enter your name: Seejo Kim</span></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Enter your age: 22</span></span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Output: Hello, Seejo Kim.</span></span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a><span class="co">#         You are 22 years old.</span></span></code></pre></div>
+<h3 id="파일로-입력-및-파일로-출력">파일로 입력 및 파일로 출력</h3>
+<p>Python의 <code>open()</code> 함수를 사용하여 파일 입출력을 쉽게
+구현할 수 있다. 파일 모드는 다음과 같다.</p>
+<ul>
+<li><p><code>w</code>: 쓰기 모드 (파일이 존재하지 않으면 새로
+생성)</p></li>
+<li><p><code>r</code>: 읽기 모드</p></li>
+<li><p><code>a</code>: 추가 모드 (기존 내용에 추가)</p></li>
+</ul>
+<p><code>with open()</code> 구문은 파일을 자동으로 열고 닫아주는 안전한
+방법이다. <code>write()</code>를 사용하여 파일에 데이터를 저장하고,
+<code>read()</code>를 사용하여 파일 내용을 읽는다.</p>
+<p><strong>① 파일 쓰기</strong></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code># 파일에 쓰기
+with open(&quot;output.txt&quot;, &quot;w&quot;) as file:
+    file.write(&quot;안녕하세요.\n&quot;)
+    file.write(&quot;Python 파일 입출력 예제입니다.\n&quot;)</code></pre></td>
+<td style="text-align: left;">안녕하세요.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Python 파일 입출력 예제입니다.</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>② 파일 읽기</strong></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code># 파일 읽기
+with open(&quot;output.txt&quot;, &quot;r&quot;) as file:
+    content = file.read()
+    print(&quot;파일 내용:\n&quot;, content)</code></pre></td>
+<td style="text-align: left;">파일 내용:</td>
+</tr>
+<tr>
+<td style="text-align: left;">안녕하세요.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">Python 파일 입출력 예제입니다.</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>③ 하나로 합친 완전한 Python 소스 코드</strong></p>
+<p>아래는 “파일로 입력 및 파일로 출력”을 하나로 합친 완전한 Python 소스
+코드이다. 이 코드는 파일에 데이터를 쓰고, 저장된 파일을 읽어 출력하는
+과정을 포함한다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code># 파일로 입력 및 파일로 출력
+# 파일에 데이터를 쓰고, 저장된 데이터를 읽어 출력하는 코드
+
+# 파일 쓰기
+with open(&quot;output.txt&quot;, &quot;w&quot;) as file:
+    file.write(&quot;안녕하세요.\n&quot;)
+    file.write(&quot;Python 파일 입출력 예제입니다.\n&quot;)
+
+print(&quot;데이터가 파일에 저장되었습니다: output.txt&quot;)
+
+# 파일 읽기
+with open(&quot;output.txt&quot;, &quot;r&quot;) as file:
+    content = file.read()
+
+print(&quot;파일에서 읽은 내용:&quot;)
+print(content)</code></pre></td>
+<td style="text-align: left;">output.txt 파일 내용:</td>
+</tr>
+<tr>
+<td style="text-align: left;">안녕하세요.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">Python 파일 입출력 예제입니다.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">터미널 출력:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">데이터가 파일에 저장되었습니다:
+output.txt</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">파일에서 읽은 내용:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">안녕하세요.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">Python 파일 입출력 예제입니다.</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>( 1.9.3 ) <span class="math inline">\(m \times n\)</span>
+행렬 [A] 입출력 하기</strong></p>
+<p>아래는 "m by n 행렬 [A]의 입출력" 코드를 하나로 통합한 완전한 Python
+코드이다. 이 코드는 행렬을 생성하고 파일에 저장한 후, 저장된 파일에서
+행렬을 불러와 출력하는 과정을 포함한다. 코드는 간단히 설명하면, 행렬
+생성, 파일 저장, 파일 읽기 순으로 이루어져 있다. 행렬 생성은
+<code>np.array()</code>를 사용하여 NumPy 배열을 3x3 행렬 A로 생성하고
+<code>print()</code>로 생성된 행렬을 확인한다. 행렬 저장은
+<code>np.savetxt()</code> 함수를 이용하여 <code>matrix.txt</code>에
+저장하고, 저장 형식은 <code>fmt="%d"</code>로 정수 형식으로 저장하고,
+<code>delimiter=","</code>로 쉼표 데이터로 구분한다. 파일 읽기는
+<code>np.loadtxt()</code> 함수를 사용하여 <code>matrix.txt</code> 파일을
+읽어와 NumPy 배열로 복원하고, <code>dtype=int</code> 옵션으로 데이터를
+정수형으로 변환하였다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code>import numpy as np
+
+# m x n 행렬 생성
+A = np.array([[1, 2, 3],
+              [4, 5, 6],
+              [7, 8, 9]])
+
+print(&quot;생성된 행렬 A:&quot;)
+print(A)
+
+# 행렬을 파일에 저장
+np.savetxt(&quot;matrix.txt&quot;,
+           A,
+           fmt=&quot;%d&quot;,
+           delimiter=&quot;,&quot;)
+
+print(&quot;\n행렬 A가 matrix.txt 파일에 저장.&quot;)
+
+# 저장된 파일에서 행렬 불러오기
+loaded_A = np.loadtxt(&quot;matrix.txt&quot;,
+                      delimiter=&quot;,&quot;,
+                      dtype=int)
+
+print(&quot;\n파일에서 불러온 행렬 A:&quot;)
+print(loaded_A)</code></pre></td>
+<td style="text-align: left;"><p>화면 출력:</p>
+<p>생성된 행렬 A: [[1 2 3] [4 5 6] [7 8 9]]</p>
+<p>행렬 A가 matrix.txt 파일에 저장.</p>
+<p>파일에서 불러온 행렬 A: [[1 2 3] [4 5 6] [7 8 9]]</p>
+<p>matrix.txt 파일 내용: 1,2,3 4,5,6 7,8,9</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="함수function">함수(Function)</h2>
+<h3 id="내장함수와-사용자-정의-함수">내장함수와 사용자 정의 함수</h3>
+<p>내장함수(Intrinsic Functions)는 Python에서 기본적으로 제공하는
+함수로, 추가적인 정의 없이 바로 사용할 수 있다. 예를 들어,
+<code>len()</code>, <code>sum()</code>, <code>print()</code> 등이
+있다.</p>
+<p>사용자 정의 함수(User-defined Function)는 프로그램의 특정 요구사항을
+충족하기 위해 직접 설계한 함수이다. <code>def</code> 키워드를 사용하여
+정의한다.</p>
+<h3 id="파이썬과-numpy의-내장함수-종류">파이썬과 NumPy의 내장함수
+종류</h3>
+<p><strong>① Python List 내장함수</strong></p>
+<ul>
+<li><p><strong>append</strong></p>
+<p><code>append(a)</code>는 리스트의 마지막에 <code>a</code>라는 변수를
+추가하는 함수이다.</p></li>
+<li><p><strong>index</strong></p>
+<p><code>index(a)</code>는 리스트에 <code>a</code>라는 변수가 있으면 그
+값을 return 하는 함수이다.</p></li>
+<li><p><strong>insert</strong></p>
+<p><code>insert(a,b)</code>는 리스트의 <code>a</code>번째 위치에
+<code>b</code>를 삽입하는 함수이다.</p></li>
+<li><p><strong>sort</strong></p>
+<p><code>sort</code> 함수는 리스트의 요소를 순서대로 정렬한다.</p></li>
+</ul>
+<p><strong>append, remove, insert 내장 함수 예제</strong></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code>v=[0, 1, 2, 3]  #빈숫자에 리스트를 저장
+
+v.append(111)  #v의 리스트에 111을 추가
+print(v)       #v의 리스트를 출력
+
+v.extend([22, 33, &#39;aaa&#39;])  #새로운 리스트를 추가
+print(v)       #v의 리스트를 출력
+
+v.remove(22)   #v의 리스트에 22를 제거
+v.remove(111)  #v의 리스트에 111을 제거
+v.remove(33)   #v의 리스트에 33을 제거
+v.remove(&#39;aaa&#39;)#v의 리스트에 33을 제거
+v.remove(1)    #v의 리스트에 1을 제거
+
+print(v)       #v의 리스트를 출력
+
+v.insert(1,&#39;bbb&#39;)  #1번에 bbb를 추가
+print(v)       #v의 리스트를 출력</code></pre></td>
+<td style="text-align: left;"><pre><code>[0, 1, 2, 3, 111]
+[0, 1, 2, 3, 111, 22, 33, &#39;aaa&#39;]
+[0, 2, 3]
+[0, &#39;bbb&#39;, 2, 3]</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="사용자-정의-함수-선언과-특징">사용자 정의 함수 선언과 특징</h3>
+<p>Python은 다른 언어(C, C++, Java, Fortran 등)와 마찬가지로 함수를 만들
+수 있으며, 이를 통해 특정 작업을 수행하는 코드를 모듈화할 수 있다.
+하지만 Python의 함수 선언 방식은 다른 언어들과 몇 가지 차이를
+가진다.</p>
+<ol>
+<li><p>함수 선언 방식</p>
+<ul>
+<li><p>Python에서는 <code>def</code> 키워드를 사용하여 함수를 정의한다.
+<code>def</code>는 definition(정의)의 약자로 함수 선언의 시작을
+의미한다.</p></li>
+<li><p>함수 이름 뒤에는 괄호가 오며, 괄호 안에는 필요에 따라 인자를
+정의할 수 있다. 여러 개의 인자가 있을 경우 쉼표(,)로 구분한다.</p></li>
+<li><p>Python은 반환 데이터 유형을 명시적으로 정의하지 않는다. 함수가
+값을 반환하려면 <code>return</code> 키워드를 사용한다.</p></li>
+</ul></li>
+<li><p>Python과 다른 언어의 차이점</p>
+<ul>
+<li><p>Python에서는 Header 파일이 필요하지 않다.</p></li>
+<li><p>변수와 반환값의 데이터 유형을 명시하지 않아도 된다. 이는 C, C++,
+Java, Fortran 등의 언어와 차이점 중 하나이다.</p></li>
+<li><p>Python의 유연한 데이터 관리 방식을 통해 함수 내에서 다양한 데이터
+유형을 쉽게 처리할 수 있다.</p></li>
+</ul></li>
+</ol>
+<h3 id="사용자-정의-함수-예제">사용자 정의 함수 예제</h3>
+<ol>
+<li><p>함수 예제: 수학적 함수와 도함수</p>
+<p>아래는 함수 <span class="math inline">\(f(x)\)</span>와 그 도함수
+<span class="math inline">\(f&#39;(x)\)</span>를 정의하고 사용하는
+Python 코드의 예이다. <span class="math inline">\(f(x)\)</span> 함수는
+정의된 수학 함수로, 입력값 <span class="math inline">\(x\)</span>를 받아
+<span class="math inline">\(9 - x(x - 10)\)</span>의 결과를 반환한다.
+<span class="math inline">\(fprime(x)\)</span> 도함수는 <span
+class="math inline">\(f(x)\)</span>의 도함수로, 입력값 <span
+class="math inline">\(x\)</span>에 대해 식 <span
+class="math inline">\(-2x + 10\)</span>의 결과를 반환한다.
+<code>print()</code>를 통해 두 함수의 결과를 확인한다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"># f(x) 함수 정의</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">def f(x):</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">return 9 - x * (x - 10)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># f’(x) 도함수 정의</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">def fprime(x):</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">return -2 * x + 10</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># 함수 출력 예제</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print("f(3) = ", f(3))</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">f(3) = 0</td>
+</tr>
+<tr>
+<td style="text-align: left;">print("f’(3) = ", fprime(3))</td>
+<td style="text-align: left;">f’(3) = 4</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div></li>
+<li><p>함수 예제: 팩토리얼 계산</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"># 사용자 정의 함수: 팩토리얼 계산</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">def factorial(n):</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">if n == 0 or n == 1:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">return 1</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">else:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">return n * factorial(n - 1)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># 사용자 정의 함수 호출</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print("5! = ", factorial(5))</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">5! = 120</td>
+</tr>
+<tr>
+<td style="text-align: left;">print("7! = ", factorial(7))</td>
+<td style="text-align: left;">7! = 5040</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div></li>
+</ol>
+<ol start="3">
+<li><p>함수 예제: 함수 F(x)를 정의하고 계산</p>
+<p>함수 <span class="math inline">\(F(x)\)</span>를 정의하여 방정식의
+값을 계산하여 보자. 주어진 함수 <span class="math inline">\(f(x) = 9 -
+x(x - 10)\)</span>에 <span class="math inline">\(x = 101\)</span>을
+대입하여 값을 출력한다. 함수를 정의한 후 변수를 선언하고, 정의한 함수를
+호출하여 결과를 출력한다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">def f(x):</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">return 9 - x * (x - 10)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">x = 101</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(f(x))</td>
+<td style="text-align: left;">-9182</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div></li>
+<li><p>함수 예제: 사용자 정의 함수와 조건문 결합</p>
+<p><code>even_or_odd()</code> 함수는 조건문을 사용하여 입력된 숫자가
+짝수인지 홀수인지 판별한다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"># 숫자가 짝수인지 홀수인지 판별하는
+함수</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">def even_or_odd(number):</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">if number % 2 == 0:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">return f"{number}는 짝수입니다."</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">else:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">return f"{number}는 홀수입니다."</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># 함수 호출</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print(even_or_odd(10))</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">10는 짝수입니다.</td>
+</tr>
+<tr>
+<td style="text-align: left;">print(even_or_odd(7))</td>
+<td style="text-align: left;">7는 홀수입니다.</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div></li>
+</ol>
+<h2 id="numpy를-이용한-벡터-행렬">NumPy를 이용한 벡터 행렬</h2>
+<h3 id="내적dot-product과-외적cross-product">내적(Dot Product)과
+외적(Cross Product)</h3>
+<ol>
+<li><p>벡터의 내적</p>
+<p>두 벡터의 대응 요소를 곱하고 그 합을 구하는 연산이다. 내적은
+기하학적으로 두 벡터 간의 각도 계산이나 프로젝션에 사용된다. 벡터 간의
+유클리드 거리는 두 벡터 사이 벡터의 크기(norm)를 계산한다. <span
+class="math inline">\(n\)</span>차원 벡터의 내적 <span
+class="math inline">\(\mathbf{a} \cdot \mathbf{b}\)</span>의 공식은
+다음과 같다.</p>
+<p><span class="math display">\[\mathbf{a} \cdot \mathbf{b}
+= (a_1 b_1) + (a_2 b_2) + \cdots + (a_n b_n)\]</span></p>
+<p><span class="math display">\[= \sum_{i=1}^{n} (a_i b_i)\]</span></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">import numpy as np</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># 두 벡터 정의</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">a = np.array([1, 2, 3])</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">b = np.array([4, 5, 6])</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># 내적 계산</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">dot_product = np.dot(a, b)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print("벡터 a와 b의 내적:",
+dot_product)</td>
+<td style="text-align: left;">벡터 a와 b의 내적: 32</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div></li>
+<li><p>벡터의 외적</p>
+<p>3차원 벡터에서 정의되며, 두 벡터에 수직인 벡터를 반환한다.
+<code>np.cross()</code> 함수는 두 3차원 벡터의 외적을 계산한다. 결과
+벡터는 입력 벡터에 수직이다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"># 두 벡터 정의</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">a = np.array([1, 2, 3])</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">b = np.array([4, 5, 6])</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># 외적 계산</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">cross_product = np.cross(a, b)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print("벡터 a와 b의 외적:",
+cross_product)</td>
+<td style="text-align: left;">벡터 a와 b의 외적: [-3 ]</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div></li>
+</ol>
+<p><strong>실습예제:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_11_numpy_linear_algebra.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_11_numpy_linear_algebra.py</a></p>
+<h3 id="두-벡터간의-거리-구하기">두 벡터간의 거리 구하기</h3>
+<p>두 벡터 간의 거리는 일반적으로 유클리드 거리(Euclidean distance)를
+사용하여 계산한다. 이는 두 벡터 사이를 벡터로 나타낸 후, 해당 벡터의
+크기(norm)를 구하는 방식이다. Python의 NumPy 라이브러리를 사용하면
+유클리드 거리를 간단히 계산할 수 있다. <span
+class="math inline">\(n\)</span>차원 벡터 <span
+class="math inline">\(\mathbf{a}, \mathbf{b}\)</span>의 거리는 다음과
+같다.</p>
+<p><span class="math display">\[\| \mathbf{a} - \mathbf{b} \|
+=
+\sqrt{
+(a_1 - b_1)^2 + (a_2 - b_2)^2 + \cdots + (a_n - b_n)^2
+}\]</span></p>
+<p><span class="math display">\[=
+\sqrt{
+\sum_{i=1}^{n} (a_i - b_i)^2
+}\]</span></p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">import numpy as np</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># 두 벡터 정의</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">a = np.array([1, 2, 3])</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">b = np.array([4, 5, 6])</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"># 유클리드 거리 계산</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">distance = np.linalg.norm(a - b)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">print("벡터 a:", a)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">벡터 a: [1 2 3]</td>
+</tr>
+<tr>
+<td style="text-align: left;">print("벡터 b:", b)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">벡터 b: [4 5 6]</td>
+</tr>
+<tr>
+<td style="text-align: left;">print("두 벡터 간의 거리:", distance)</td>
+<td style="text-align: left;">두 벡터 간의 거리:</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">5.196152422706632</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="두-행렬의-곱-matrix-multiplication">두 행렬의 곱 (matrix
+multiplication)</h3>
+<p>두 행렬의 곱은 선형대수에서 중요한 연산으로, NumPy에서는 @ 연산자
+또는 np.dot()을 사용하여 계산할 수 있다. @ 연산자는 Python 3.5 이상에서
+도입된 행렬 곱(matrix multiplication) 연산자이며 2차원 배열(행렬)에 대해
+적용된다. np.dot()은 NumPy에서 제공하는 함수로, 다목적 내적 연산을
+수행한다. 즉, 벡터와 행렬 모두 지원하며, 다차원 배열의 내적 연산도
+수행할 수 있다.</p>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: center;"><strong>연산자 / 함수</strong></th>
+<th style="text-align: center;"><strong>기능</strong></th>
+<th style="text-align: center;"><strong>적용 범위</strong></th>
+<th style="text-align: center;"><strong>예시</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">@</td>
+<td style="text-align: center;">행렬 곱 전용</td>
+<td style="text-align: center;">2차원 배열(행렬)</td>
+<td style="text-align: center;">C = A @ B</td>
+</tr>
+<tr>
+<td style="text-align: center;">np.dot()</td>
+<td style="text-align: center;">다목적 내적 연산</td>
+<td style="text-align: center;">1차원(벡터), 2차원(행렬), 다차원
+배열</td>
+<td style="text-align: center;">C = np.dot(A, B)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>행렬 연산은 반복 계산의 대표적인 예이다. Python에서는 NumPy
+라이브러리를 활용하여 효율적으로 행렬과 관련된 반복 계산을 수행할 수
+있다.</p>
+<h4 class="unnumbered" id="numpy를-이용한-행렬-곱">NumPy를 이용한 행렬
+곱</h4>
+<p>일반적인 <span class="math inline">\(N \times N\)</span> 행렬 <span
+class="math inline">\(A\)</span>, <span
+class="math inline">\(B\)</span>에 대해 행렬의 곱을 행렬 <span
+class="math inline">\(C\)</span>라 하면,</p>
+<p><span class="math display">\[\begin{equation}
+C_{ij} = \sum_{k=1}^{N} A_{ik} B_{kj}
+\quad (i, j = 1, \dots, N)
+\tag{1.11.3-1}
+\end{equation}\]</span></p>
+<p>과 같이 나타낼 수 있다. 두 행렬 <span
+class="math inline">\(A\)</span>와 <span
+class="math inline">\(B\)</span>의 행렬 곱을 계산할 때, NumPy는 벡터
+연산을 지원하므로 반복문 없이 간단히 행렬 곱을 수행할 수 있다. @
+연산자나 <code>np.dot()</code> 함수는 동일한 결과를 반환한다.</p>
+<h4 class="unnumbered" id="연산자로-행렬-곱-ab">’*’ 연산자로 행렬 곱
+(AB)</h4>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code># numpy 라이브러리 임포트
+import numpy as np
+
+# 행렬 선언
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[5, 6], [7, 8]])
+
+# 행렬 곱 수행 (np.matmul 사용)
+C = np.matmul(A, B)
+print(&quot;C =&quot;, C)
+
+# 행렬을 NumPy의 matrix 객체로 변환
+A1 = np.asmatrix(A)
+print(&quot;A1 =&quot;, A1)
+
+B1 = np.asmatrix(B)
+print(&quot;B1 =&quot;, B1)
+
+# matrix 객체에서 &#39;@&#39; 연산자로 행렬 곱 수행
+C1 = A1 * B1
+print(&quot;C1 =&quot;, C1)</code></pre></td>
+<td style="text-align: left;"><pre><code>C = [[19 22]
+     [43 50]]
+
+A1 = [[1 2]
+      [3 4]]
+
+B1 = [[5 6]
+      [7 8]]
+
+C1 = [[19 22]
+      [43 50]]</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 class="unnumbered"
+id="np.dotab-또는-연산자로-행렬-곱-ab">np.dot(A,B) 또는 ’@’ 연산자로
+행렬 곱 (AB)</h4>
+<div class="center">
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><pre><code>import numpy as np
+
+# 행렬 선언
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[5, 6], [7, 8]])
+
+# 행렬 곱 계산
+C = A @ B   # 또는 np.dot(A, B)
+print(&quot;행렬 곱 결과:\n&quot;, C)</code></pre></td>
+<td style="text-align: left;"><pre><code>행렬 곱 결과:
+[[19 22]
+ [43 50]]</code></pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 class="unnumbered" id="numpy-를-사용하지-않은-행렬-곱-ab">numpy 를
+사용하지 않은 행렬 곱 (AB)</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>주석으로 설명한 소스
+코드</strong></th>
+<th style="text-align: left;"><strong>출력 결과</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><div class="minipage">
+<pre><code># 2차원 배열을 생성하는 함수 정의
+def A_0(rows, cols):
+    A = []  # 빈 리스트 초기화
+    while len(A) &lt; rows:  # 행 개수가 rows보다 작으면 반복
+        A.append([])  # 새로운 행 추가
+        
+        # 열 개수가 cols보다 작으면 반복
+        while len(A[-1]) &lt; cols:
+            A[-1].append(0.0)  # 행에 0.0 추가
+    return A  # 생성된 2차원 배열 반환
+
+# 두 행렬의 곱을 계산하는 함수 정의
+def AmultiB(A, B):
+    rowsA = len(A)  # A 행렬의 행 개수
+    colsA = len(A[0])  # A 행렬의 열 개수
+    rowsB = len(B)  # B 행렬의 행 개수
+    colsB = len(B[0])  # B 행렬의 열 개수
+
+    # 행렬 곱이 가능한지 확인 (A의 열 개수 == B의 행 개수)
+    if colsA != rowsB:
+        # 조건이 맞지 않으면 예외 발생
+        raise ArithmeticError(&#39;colsA != rowsB&#39;)
+
+    # 결과 행렬의 크기는 rowsA x colsB
+    AmultiB = A_0(rowsA, colsB)
+
+    # 행렬 곱 계산
+    for i in range(rowsA):  # A의 행 반복
+        for j in range(colsB):  # B의 열 반복
+            sum = 0  # 곱셈과 덧셈의 결과 저장 변수
+
+            # A의 열과 B의 행 반복
+            for ii in range(colsA):
+                sum = sum + A[i][ii] * B[ii][j]
+
+            # 결과 행렬의 (i, j) 위치에 저장
+            AmultiB[i][j] = sum
+    return AmultiB  # 결과 행렬 반환
+
+# 행렬 선언
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[5, 6], [7, 8]])
+
+# A와 B의 곱 계산
+C = AmultiB(A, B)
+print(&#39;C =&#39;, C)</code></pre>
+</div></td>
+<td style="text-align: left;"><div class="minipage">
+<pre><code>C = [[19, 22],
+     [43, 50]]</code></pre>
+</div></td>
+</tr>
+</tbody>
+</table>
+<h2 id="객체지향-프로그래밍oop">객체지향 프로그래밍(OOP)</h2>
+<h3 id="클래스-개요">클래스 개요</h3>
+<p>OOP는 객체 지향 프로그래밍으로 프로그램을 구성하는 데이터와 기능을
+논리적으로 묶어 하나의 객체(Object)로 표현한다. 객체는 데이터와 기능을
+모두 포함하는데, 데이터는 속성이라 하며, 기능은 메서드라고 한다. 객체는
+클래스를 템플릿으로 생성되며, 같은 클래스에서 생성된 객체들은 공통된
+속성과 기능을 가진다. 파이썬은 객체 지향 프로그래밍을 지원하는 언어로,
+모든 것이 객체이다. 따라서 파이썬에서는 클래스를 정의하여 객체를
+생성하고, 객체의 속성과 메서드를 사용할 수 있다.</p>
+<p>객체 지향 프로그래밍은 다음과 같은 특징을 가진다.</p>
+<p>① <strong>캡슐화(Encapsulation)</strong>:<br />
+객체의 속성과 메소드를 하나로 묶어 정보 은닉을 구현한다. 객체 외부에서는
+객체 내부의 데이터에 직접적으로 접근할 수 없으며, 메소드를 통해
+간접적으로 접근하게 된다.</p>
+<p>② <strong>상속(Inheritance)</strong>:<br />
+부모 클래스의 특징을 자식 클래스가 물려받는 것으로, 코드의 재사용성을
+높인다.</p>
+<p>③ <strong>다형성(Polymorphism)</strong>:<br />
+같은 이름의 메소드를 사용하여 객체마다 다른 동작을 할 수 있도록
+한다.</p>
+<h3 id="클래스-선언">클래스 선언</h3>
+<p>파이썬에서 클래스는 <code>class</code> 키워드를 사용하여 선언한다.
+클래스는 속성과 메서드를 포함하며, 객체지향 프로그래밍의 핵심 요소로
+데이터와 동작을 하나의 단위로 묶어 관리할 수 있다.</p>
+<h3 id="속성변수">속성(변수)</h3>
+<p><strong>① 인스턴스 변수</strong></p>
+<p>인스턴스 변수는 각 인스턴스마다 독립된 변수이다. 예를 들어, 클래스는
+여러 개의 인스턴스를 생성할 수 있으며, 각각의 인스턴스 변수는 서로 다른
+값으로 설정된다. 인스턴스마다 각기 다른 값을 저장할 수 있다.</p>
+<p><strong>② 클래스 변수</strong></p>
+<p>클래스 변수는 클래스의 모든 인스턴스 사이에 공유되는 값을 가진
+변수이다. 클래스 변수는 인스턴스를 생성하지 않고도 접근하거나 참조할 수
+있다.</p>
+<h3 id="클래스-메서드함수">클래스 메서드(함수)</h3>
+<p>클래스 메서드는 클래스 자체를 대상으로 동작한다. 클래스 레벨에서
+데이터를 다루는 메서드이다. 일반 메서드가 특정 객체를 대상으로 동작하는
+것과 달리, 클래스 메서드는 클래스 자체를 첫 번째 인자로 받아 클래스의
+속성과 동작을 조작하거나 액세스할 수 있다.</p>
+<p>파이썬에서는 <code>@classmethod</code> 데코레이터를 사용하여
+정의한다. 첫 번째 매개변수는 <code>cls</code>를 사용한다.
+<code>cls</code>는 클래스 자체를 참조하며 이를 통해 클래스 속성에
+접근하거나 새로운 객체를 생성할 수 있다.</p>
+<p>클래스 메서드는 객체와 클래스 레벨의 상호작용을 효율적으로 관리하기
+위한 강력한 도구이다.</p>
+<p><strong>① 클래스 메서드의 주요 특징</strong></p>
+<ul>
+<li><p><strong>클래스 레벨에서 동작:</strong> 클래스 변수를 수정하거나
+클래스 자체의 동작을 정의하는 데 사용한다.</p></li>
+<li><p><strong>클래스 이름으로 직접 호출 가능:</strong> 인스턴스를
+생성하지 않고도 클래스 이름을 통해 호출할 수 있다.</p></li>
+<li><p><strong>데이터 관리 및 팩토리 메서드 역할:</strong> 클래스와
+관련된 데이터를 관리하거나 객체를 생성하는 팩토리(factory) 메서드로
+활용된다.</p></li>
+</ul>
+<p><strong>② 예제 코드</strong></p>
+<p><strong>Class methods operate at the class level:</strong></p>
+<div class="sourceCode" id="cb55" data-language="Python"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Example:</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>    class_variable <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, value):</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.instance_variable <span class="op">=</span> value</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">@classmethod</span></span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> increment_class_variable(cls, amount):</span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>        cls.class_variable <span class="op">+=</span> amount</span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;Class variable updated to </span><span class="sc">{</span>cls<span class="sc">.</span>class_variable<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">@classmethod</span></span>
+<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> create_instance(cls, value):</span>
+<span id="cb55-14"><a href="#cb55-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> cls(value)</span>
+<span id="cb55-15"><a href="#cb55-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-16"><a href="#cb55-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Usage</span></span>
+<span id="cb55-17"><a href="#cb55-17" aria-hidden="true" tabindex="-1"></a>Example.increment_class_variable(<span class="dv">10</span>)</span>
+<span id="cb55-18"><a href="#cb55-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Output: Class variable updated to 10</span></span>
+<span id="cb55-19"><a href="#cb55-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-20"><a href="#cb55-20" aria-hidden="true" tabindex="-1"></a>instance <span class="op">=</span> Example.create_instance(<span class="dv">20</span>)</span>
+<span id="cb55-21"><a href="#cb55-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(instance.instance_variable)  <span class="co"># Output: 20</span></span></code></pre></div>
+<h3 id="객체지향-프로그래밍oop-예제-1">객체지향 프로그래밍(OOP) 예제
+1</h3>
+<p><strong>실습예제:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_12_oop.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_12_oop.py</a></p>
+<div class="sourceCode" id="cb56" data-language="Python"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define class</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Animal:</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, name):  <span class="co"># Constructor</span></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.name <span class="op">=</span> name</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> speak(<span class="va">self</span>):</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>name<span class="sc">}</span><span class="ss"> is making a sound.&quot;</span>)</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Inheritance</span></span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Dog(Animal):</span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> speak(<span class="va">self</span>):  <span class="co"># Method overriding (polymorphism)</span></span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>name<span class="sc">}</span><span class="ss"> says Woof!&quot;</span>)</span>
+<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Create object and use</span></span>
+<span id="cb56-15"><a href="#cb56-15" aria-hidden="true" tabindex="-1"></a>dog <span class="op">=</span> Dog(<span class="st">&quot;Buddy&quot;</span>)</span>
+<span id="cb56-16"><a href="#cb56-16" aria-hidden="true" tabindex="-1"></a>dog.speak()</span>
+<span id="cb56-17"><a href="#cb56-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Output: Buddy says Woof!</span></span></code></pre></div>
+<h3 id="객체지향-프로그래밍oop-예제-2">객체지향 프로그래밍(OOP) 예제
+2</h3>
+<p>이 코드는 객체지향 프로그래밍(OOP)을 활용하여 함수와 미분을 관리하고
+시각화하는 예제이다. 이 코드는 객체지향 프로그래밍(OOP)을 사용하여
+함수의 기본을 정의하고 가시화하는 프로그램이다. <code>Function</code>
+클래스는 함수와 그 미분을 저장하며, 주어진 입력값에 함수 값을 계산하는
+<code>evaluate</code> 메서드와 미분 값을 계산하는
+<code>derivative</code> 메서드를 포함한다. <code>visualize</code>
+메서드는 지정된 범위에서 함수와 미분의 그래프를 그리는 기능을 제공한다.
+이 코드에서는 함수 <span class="math inline">\(f(x) = x^2\)</span> 과
+미분 <span class="math inline">\(f&#39;(x) = 2x\)</span>를 정의하고,
+이들 함수를 객체로 생성하여 시각화한다. 그래프는 <span
+class="math inline">\(x\)</span>의 범위를 -10에서 10까지로 설정하며,
+파란색 선으로 함수 <span class="math inline">\(f(x) = x^2\)</span>,
+주황색 점선으로 미분 <span class="math inline">\(f&#39;(x) =
+2x\)</span>를 나타낸다. 결과적으로 함수와 미분의 관계를 시각적으로
+확인할 수 있는 도구를 제공한다.</p>
+<p><strong>실습예제</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_12_06_oop_ex2.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_12_06_oop_ex2.py</a></p>
+<h2 id="matplotlib를-이용한-그래프-시각화">matplotlib를 이용한 그래프
+시각화</h2>
+<p><strong>Overview</strong></p>
+<blockquote>
+<p>이 절에서는 파이썬의 데이터 시각화 라이브러리인 Matplotlib를 사용하여
+데이터를 그래프로 표현하는 방법을 설명한다. Matplotlib는 선 그래프, 막대
+그래프, 히스토그램, 산점도 등 다양한 그래프 유형을 지원하며, 데이터를
+시각적으로 분석하는 데 유용하다. 그래프의 기본 구성 요소인 제목, 축
+레이블, 범례 등을 설정하여 그래프를 사용자 정의할 수 있다. 또한, 플롯
+스타일을 조정하거나, 서브플롯을 생성해 여러 데이터를 동시에 시각화하는
+방법도 다룬다. 이 절에서는 Matplotlib의 기본 사용법부터 고급 그래프 작성
+방법까지 실습과 함께 다루며, 데이터를 효과적으로 표현하고 분석할 수 있는
+방법을 학습한다.</p>
+</blockquote>
+<p><strong>Supported Graph Types:</strong></p>
+<ul>
+<li><p>Line graphs</p></li>
+<li><p>Bar charts</p></li>
+<li><p>Histograms</p></li>
+<li><p>Scatter plots</p></li>
+<li><p>3D surface plots</p></li>
+</ul>
+<p><strong>Key Components:</strong></p>
+<ul>
+<li><p>Title, axis labels, legends</p></li>
+<li><p>Plot styles and colors</p></li>
+<li><p>Subplots for multiple visualizations</p></li>
+</ul>
+<p><strong>싷습예제:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_13_matplotlib.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter01/section_01_13_matplotlib.py</a></p>
+<h3 id="그래프-그리기-위한-주요-내장함수">그래프 그리기 위한 주요
+내장함수</h3>
+<p>Matplotlib에서 자주 사용하는 주요 함수들은 다음과 같다:</p>
+<ul>
+<li><p><strong>plot()</strong>: 선 그래프를 그리는 함수.</p></li>
+<li><p><strong>scatter()</strong>: 산점도를 그리는 함수.</p></li>
+<li><p><strong>bar()</strong>: 막대 그래프를 그리는 함수.</p></li>
+<li><p><strong>hist()</strong>: 히스토그램을 그리는 함수.</p></li>
+<li><p><strong>imshow()</strong>: 행렬 데이터를 시각화하는
+함수.</p></li>
+<li><p><strong>show()</strong>: 그래프를 화면에 출력.</p></li>
+</ul>
+<h3 id="차원-그래프">2차원 그래프</h3>
+<p><strong>2D Line Graph Example</strong></p>
+<div class="sourceCode" id="cb57" data-language="Python"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate data</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">10</span>, <span class="dv">10</span>, <span class="dv">500</span>)</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> x<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Create graph</span></span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>plt.plot(x, y, label<span class="op">=</span><span class="st">&#39;f(x) = x^2&#39;</span>, color<span class="op">=</span><span class="st">&#39;blue&#39;</span>, linewidth<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Add annotations</span></span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">&#39;Line Graph of f(x) = x^2&#39;</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">&#39;x&#39;</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">&#39;f(x)&#39;</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a>plt.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">&#39;black&#39;</span>, linestyle<span class="op">=</span><span class="st">&#39;-&#39;</span>, linewidth<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb57-17"><a href="#cb57-17" aria-hidden="true" tabindex="-1"></a>plt.axvline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">&#39;black&#39;</span>, linestyle<span class="op">=</span><span class="st">&#39;-&#39;</span>, linewidth<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb57-18"><a href="#cb57-18" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">&#39;--&#39;</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb57-19"><a href="#cb57-19" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb57-20"><a href="#cb57-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-21"><a href="#cb57-21" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div>
+<h3 id="차원-산점도">2차원 산점도</h3>
+<p>이 코드는 <span class="math inline">\(x\)</span>, <span
+class="math inline">\(y\)</span>의 관계를 시각화한 2차원 산점도를
+그래프로 생성한다. <span class="math inline">\(x\)</span>는 0에서 10
+사이의 100개의 난수이며, <span class="math inline">\(y = 2x +
+noise\)</span>로 계산된 값으로 각 점을 파란색으로 표시하고, 제목, 축
+레이블, 격자선, 범례를 추가하여 데이터 분포를 직관적으로 표현한다.</p>
+<p><strong>2D Scatter Plot</strong></p>
+<div class="sourceCode" id="cb58" data-language="Python"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate data</span></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.random.rand(<span class="dv">100</span>) <span class="op">*</span> <span class="dv">10</span></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> x <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">100</span>)</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create scatter plot</span></span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>plt.scatter(x, y, color<span class="op">=</span><span class="st">&#39;blue&#39;</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, label<span class="op">=</span><span class="st">&#39;Data points&#39;</span>)</span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Add annotations</span></span>
+<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">&#39;2D Scatter Plot&#39;</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb58-15"><a href="#cb58-15" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">&#39;x&#39;</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb58-16"><a href="#cb58-16" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">&#39;y&#39;</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb58-17"><a href="#cb58-17" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">&#39;--&#39;</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb58-18"><a href="#cb58-18" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb58-19"><a href="#cb58-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-20"><a href="#cb58-20" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div>
+<h3 id="차원-그래프-1">3차원 그래프</h3>
+<p>이 코드는 <span class="math display">\[z = \sin\!\left(\sqrt{x^2 +
+y^2}\right)\]</span> 을 3D 표면 그래프로 시각화한다.</p>
+<p><span class="math inline">\(x\)</span>와 <span
+class="math inline">\(y\)</span>는 <span
+class="math inline">\(-5\)</span>에서 <span
+class="math inline">\(5\)</span>까지의 값을 균등 분할하여 생성하고,
+<code>np.meshgrid</code>를 사용해 격자(grid) 형태의 좌표를 만든다. <span
+class="math inline">\(z\)</span> 값은 함수 <span
+class="math inline">\(\sin(\sqrt{x^2+y^2})\)</span>를 통해 계산된다.</p>
+<p>3D 그래프는 <code>plot_surface</code>로 생성하며, 색상은
+<code>viridis</code> 컬러맵을 적용한다. 제목과 축 레이블을 추가하여
+그래프의 가독성을 높인다.</p>
+<p><strong>3D Surface Plot</strong></p>
+<div class="sourceCode" id="cb59" data-language="Python"
+data-basicstyle="\ttfamily\scriptsize"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> mpl_toolkits.mplot3d <span class="im">import</span> Axes3D</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">50</span>)</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">50</span>)</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>X, Y <span class="op">=</span> np.meshgrid(x, y)</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>Z <span class="op">=</span> np.sin(np.sqrt(X<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> Y<span class="op">**</span><span class="dv">2</span>))</span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Create 3D graph</span></span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.figure()</span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> fig.add_subplot(<span class="dv">111</span>, projection<span class="op">=</span><span class="st">&quot;3d&quot;</span>)</span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a>ax.plot_surface(X, Y, Z, cmap<span class="op">=</span><span class="st">&quot;viridis&quot;</span>)</span>
+<span id="cb59-15"><a href="#cb59-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-16"><a href="#cb59-16" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">&quot;3D surface&quot;</span>)</span>
+<span id="cb59-17"><a href="#cb59-17" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">&quot;X axis&quot;</span>)</span>
+<span id="cb59-18"><a href="#cb59-18" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">&quot;Y axis&quot;</span>)</span>
+<span id="cb59-19"><a href="#cb59-19" aria-hidden="true" tabindex="-1"></a>ax.set_zlabel(<span class="st">&quot;Z axis&quot;</span>)</span>
+<span id="cb59-20"><a href="#cb59-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-21"><a href="#cb59-21" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div>
+<h2 id="연습문제">연습문제</h2>
+</body>
+</html>
