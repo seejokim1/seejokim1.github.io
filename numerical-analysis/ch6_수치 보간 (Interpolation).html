@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="김시조 국립경국대학교: (구)국립안동대학교" />
+  <meta name="dcterms.date" content="2026-03-15" />
+  <title>파이썬을 이용한 알기쉬운 수치해석</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title"><strong>파이썬을 이용한 알기쉬운
+수치해석</strong></h1>
+<p class="author">김시조<br />
+국립경국대학교: (구)국립안동대학교</p>
+<p class="date">2026-03-15</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#파이썬의-이해" id="toc-파이썬의-이해">파이썬의
+이해</a></li>
+<li><a href="#비선형-방정식-구하기" id="toc-비선형-방정식-구하기">비선형
+방정식 구하기</a></li>
+<li><a href="#선형연립방정식-수치해법"
+id="toc-선형연립방정식-수치해법">선형연립방정식 수치해법</a></li>
+<li><a href="#수치미분-numerical-differentiation"
+id="toc-수치미분-numerical-differentiation">수치미분 (Numerical
+Differentiation)</a></li>
+<li><a href="#수치적분-numerical-integration"
+id="toc-수치적분-numerical-integration">수치적분 (Numerical
+Integration)</a></li>
+<li><a href="#수치-보간-interpolation"
+id="toc-수치-보간-interpolation">수치 보간 (Interpolation)</a>
+<ul>
+<li><a href="#수치-보간-개요" id="toc-수치-보간-개요">수치 보간 개요</a>
+<ul>
+<li><a href="#보간과-곡선-근사의-머신러닝-관점"
+id="toc-보간과-곡선-근사의-머신러닝-관점">보간과 곡선 근사의 머신러닝
+관점</a></li>
+</ul></li>
+<li><a href="#뉴턴-분할-차분법" id="toc-뉴턴-분할-차분법">뉴턴 분할
+차분법</a>
+<ul>
+<li><a href="#newton의-차분-divided-difference-1차-선형-보간"
+id="toc-newton의-차분-divided-difference-1차-선형-보간">Newton의 차분
+(Divided-Difference) 1차 선형 보간</a></li>
+<li><a href="#newton의-차분divided-difference-2차-보간"
+id="toc-newton의-차분divided-difference-2차-보간">Newton의
+차분(divided-difference) 2차 보간</a></li>
+<li><a href="#newton의-차분divided-difference-n차-보간"
+id="toc-newton의-차분divided-difference-n차-보간">Newton의
+차분(divided-difference) <span class="math inline">\(n\)</span>차
+보간</a></li>
+<li><a href="#newton의-차분divided-difference-예제"
+id="toc-newton의-차분divided-difference-예제">Newton의
+차분(divided-difference) 예제</a></li>
+</ul></li>
+<li><a href="#lagrange-interpolation-수치-보간"
+id="toc-lagrange-interpolation-수치-보간">Lagrange Interpolation 수치
+보간</a>
+<ul>
+<li><a href="#lagrange-interpolation-정의"
+id="toc-lagrange-interpolation-정의">Lagrange Interpolation
+정의</a></li>
+<li><a href="#lagrange-interpolation-예제"
+id="toc-lagrange-interpolation-예제">Lagrange Interpolation
+예제</a></li>
+</ul></li>
+<li><a href="#스플라인-보간" id="toc-스플라인-보간">스플라인 보간</a>
+<ul>
+<li><a href="#quadratic-spline" id="toc-quadratic-spline">Quadratic
+Spline</a></li>
+<li><a href="#quadratic-spline-예제"
+id="toc-quadratic-spline-예제">Quadratic Spline 예제</a></li>
+<li><a href="#cubic-spline" id="toc-cubic-spline">Cubic Spline</a></li>
+<li><a href="#cubic-spline-예제" id="toc-cubic-spline-예제">Cubic Spline
+예제</a></li>
+</ul></li>
+<li><a href="#수치보간법들의-차이점"
+id="toc-수치보간법들의-차이점">수치보간법들의 차이점</a>
+<ul>
+<li><a
+href="#뉴턴의-분할-차분newtons-divided-difference-method과-라그랑주-보간법lagrange-interpolation의-동일함"
+id="toc-뉴턴의-분할-차분newtons-divided-difference-method과-라그랑주-보간법lagrange-interpolation의-동일함">뉴턴의
+분할 차분(Newton’s Divided Difference Method)과 라그랑주 보간법(Lagrange
+Interpolation)의 동일함</a></li>
+<li><a href="#cubic-spline이-다른-보간법과-다른-이유"
+id="toc-cubic-spline이-다른-보간법과-다른-이유">Cubic Spline이 다른
+보간법과 다른 이유</a></li>
+<li><a href="#코드-구현" id="toc-코드-구현">코드 구현</a></li>
+</ul></li>
+<li><a href="#연습문제" id="toc-연습문제">연습문제</a></li>
+</ul></li>
+</ul>
+</nav>
+<p>=====================================================</p>
+<div class="center">
+<p><strong>머릿말</strong></p>
+</div>
+<p><strong>Note.</strong> 참고 URL<br />
+<a href="https://github.com/seejokim1/NA_with_python"
+class="uri">https://github.com/seejokim1/NA_with_python</a></p>
+<p>21세기는 기술 혁신과 지식의 융합이 핵심 동력으로 작용하는 시대다.
+특히 4차 산업혁명과 인공지능 기술의 발전은 전통적인 공학 분야에 새로운
+도전과 기회를 제공하고 있다. 이러한 환경에서 수치해석은 공학 문제를
+해결하는 핵심 도구로, 다양한 데이터 기반 분석과 최적화 문제 해결에
+활용되고 있다.</p>
+<p>현재 수치해석의 중요성은 더욱 강조되고 있으며, 특히 자율주행 자동차의
+수치해석에서 가장 중요한 것은 정확도와 실시간 처리이다. 자율주행 차량은
+다양한 센서 데이터를 실시간으로 처리하며, 도로 상황을 정확하게 예측하고
+반응해야 하기 때문이다. 이러한 기술은 수치해석을 통해 더욱 정교해지고,
+안전한 자율주행을 가능하게 한다.</p>
+<p>또한 AI와 수치해석은 깊은 관계를 맺고 있으며, AI의 발전이 수치해석
+방법론에 많은 영향을 미쳤고, 반대로 수치해석 기술이 AI의 성능을
+향상시키는 데 중요한 역할을 해왔다. 수치해석은 실세계의 문제를
+수학적으로 모델링하고 해결하기 위한 다양한 알고리즘과 방법을 제공하며,
+AI는 이러한 수학적 모델을 데이터 기반으로 학습하고 최적화하는 능력을
+갖추고 있다. 이 둘의 결합은 현대 과학과 공학의 중요한 연구 분야로 자리
+잡았다.</p>
+<p>예를 들어, 2024년 노벨 물리학상은 머신러닝과 AI 기술이 물리학 문제
+해결에 중요한 기여를 한 연구자에게 수여되었다. 이는 머신러닝이 복잡한
+물리적 시스템을 시뮬레이션하거나 예측하는 데 사용되고 있음을 보여준다.
+또한 알파고에 이어 알파폴드와 같은 AI 기술이 노벨 화학상을 수상하며,
+수치해석 기법을 바탕으로 AI 모델이 실세계 문제를 해결하는 데 어떻게
+활용될 수 있는지를 보여주었다.</p>
+<p>이 책은 파이썬 프로그래밍 언어를 활용하여 수치해석의 기초부터 심화
+내용까지 단계적으로 학습할 수 있도록 구성되었다. 첫 장에서는 파이썬의
+기본 문법과 데이터 처리에 필수적인 라이브러리(예: NumPy, Matplotlib)를
+다루며, 프로그래밍과 수치해석의 연결 고리를 제공한다. 이어지는 장에서는
+비선형 방정식 근사법, 선형 연립방정식 해법, 수치미분 및 수치적분,
+보간법, 수치 회귀 등 전통적인 수치해석의 핵심 주제들을 체계적으로
+소개한다.</p>
+<p>특히 후반부에서는 상미분 방정식과 편미분 방정식의 수치적 해법을
+다루며, 유한차분법(Finite Difference Method)과 유한요소법(Finite Element
+Method)의 응용을 통해 실질적인 문제 해결 방법을 제시한다. 이와 더불어
+Python을 활용하여 다양한 수치해석 문제를 직접 해결해보는 연습문제를
+포함해 독자가 이론과 실습을 병행하며 학습할 수 있도록 하였다.</p>
+<div class="flushright">
+<p>김시조</p>
+</div>
+<h1 id="파이썬의-이해">파이썬의 이해</h1>
+<h1 id="비선형-방정식-구하기">비선형 방정식 구하기</h1>
+<h1 id="선형연립방정식-수치해법">선형연립방정식 수치해법</h1>
+<h1 id="수치미분-numerical-differentiation">수치미분 (Numerical
+Differentiation)</h1>
+<h1 id="수치적분-numerical-integration">수치적분 (Numerical
+Integration)</h1>
+<h1 id="수치-보간-interpolation">수치 보간 (Interpolation)</h1>
+<h2 id="수치-보간-개요">수치 보간 개요</h2>
+<h3 id="보간과-곡선-근사의-머신러닝-관점">보간과 곡선 근사의 머신러닝
+관점</h3>
+<h5 id="보간interpolation의-기본-개념">1. 보간(Interpolation)의 기본
+개념</h5>
+<p>보간은 주어진 데이터 점 <span class="math inline">\((x_i,
+y_i)\)</span>를 모두 통과하는 곡선을 찾는 방법이다. 데이터 사이의 값을
+예측하기 위해 사용되며, 수치해석과 데이터 분석의 기본 기법이다.</p>
+<ul>
+<li><p>주어진 데이터 포인트를 정확히 통과</p></li>
+<li><p>Newton, Lagrange 다항식, Spline 보간 등이 대표적</p></li>
+<li><p>공학 계산 및 과학적 모델링에 활용</p></li>
+</ul>
+<h5 id="곡선-근사approximation">2. 곡선 근사(Approximation)</h5>
+<p>곡선 근사는 모든 점을 반드시 통과하지 않아도 되며, 전체 데이터의
+오차를 최소화하는 곡선을 찾는다.</p>
+<ul>
+<li><p>최소제곱법(Least Squares)</p></li>
+<li><p>회귀(Regression)</p></li>
+<li><p>노이즈가 포함된 데이터에 적합</p></li>
+</ul>
+<h5 id="머신러닝과의-관계">3. 머신러닝과의 관계</h5>
+<p>머신러닝은 보간 및 곡선 근사의 확장된 형태로 볼 수 있다.</p>
+<ul>
+<li><p>데이터로부터 패턴을 학습하여 함수 모델 생성</p></li>
+<li><p>과적합(Overfitting) 문제 존재</p></li>
+<li><p>구간별(piecewise) 모델링이 효과적일 수 있음</p></li>
+</ul>
+<h5 id="활용-도구">4. 활용 도구</h5>
+<p>Python 환경에서 다음 라이브러리들이 활용된다.</p>
+<ul>
+<li><p><code>NumPy</code></p></li>
+<li><p><code>SciPy</code></p></li>
+<li><p><code>TensorFlow</code></p></li>
+</ul>
+<h5 id="핵심-정리">5. 핵심 정리</h5>
+<ul>
+<li><p>보간: 모든 데이터 점을 정확히 통과</p></li>
+<li><p>근사: 오차 최소화</p></li>
+<li><p>머신러닝: 대규모 데이터 기반 확장 모델링</p></li>
+<li><p>Spline 보간은 부드러운 결과 제공</p></li>
+</ul>
+<h2 id="뉴턴-분할-차분법">뉴턴 분할 차분법</h2>
+<h3 id="newton의-차분-divided-difference-1차-선형-보간">Newton의 차분
+(Divided-Difference) 1차 선형 보간</h3>
+<p>Newton 다항식은 차분(divided difference)을 이용하여 데이터 점들을
+통과하는 보간 다항식을 구성하는 방법이다. 1차 보간은 두 점을 연결하는
+직선으로 근사하는 방법이다.</p>
+<h4 class="unnumbered" id="선형-보간의-정의">1. 선형 보간의 정의</h4>
+<p>두 점 <span class="math inline">\((x_0, f_0)\)</span>, <span
+class="math inline">\((x_1, f_1)\)</span>가 주어졌을 때, 선형 보간
+다항식은 다음과 같다.</p>
+<p><span class="math display">\[p_1(x) = b_0 + b_1(x - x_0)\]</span></p>
+<p>여기서</p>
+<p><span class="math display">\[b_0 = f(x_0)\]</span></p>
+<p><span class="math display">\[b_1 = \frac{f(x_1) - f(x_0)}{x_1 -
+x_0}\]</span></p>
+<p>즉, <span class="math inline">\(b_1\)</span>은 두 점 사이의
+기울기이다.</p>
+<h4 class="unnumbered" id="newton-차분-표현">2. Newton 차분 표현</h4>
+<p>1차 Newton 차분은 다음과 같이 정의된다.</p>
+<p><span class="math display">\[f[x_0, x_1] =
+\frac{f(x_1) - f(x_0)}{x_1 - x_0}\]</span></p>
+<p>따라서 1차 Newton 보간식은</p>
+<p><span class="math display">\[p_1(x) = f(x_0) + f[x_0, x_1](x -
+x_0)\]</span></p>
+<h4 class="unnumbered" id="특징">3. 특징</h4>
+<ul>
+<li><p>데이터 두 점을 정확히 통과한다.</p></li>
+<li><p>기울기는 평균 변화율과 동일하다.</p></li>
+<li><p>고차 보간의 기초가 되는 가장 단순한 Newton 형태이다.</p></li>
+<li><p>데이터가 추가되면 차분 항을 확장하여 다항식을 구성할 수
+있다.</p></li>
+</ul>
+<h3 id="newton의-차분divided-difference-2차-보간">Newton의
+차분(divided-difference) 2차 보간</h3>
+<p>Newton의 2차 보간은 세 점 <span
+class="math inline">\((x_0,f_0)\)</span>, <span
+class="math inline">\((x_1,f_1)\)</span>, <span
+class="math inline">\((x_2,f_2)\)</span>를 통과하는 2차 다항식을
+구성하는 방법이다.</p>
+<h4 class="unnumbered" id="차-보간-다항식">1. 2차 보간 다항식</h4>
+<p><span class="math display">\[p_2(x) = b_0 + b_1(x-x_0) +
+b_2(x-x_0)(x-x_1)
+\tag{6.2.2-1}\]</span></p>
+<h4 class="unnumbered" id="계수-계산">2. 계수 계산</h4>
+<p><span class="math display">\[b_0 = f(x_0)\]</span></p>
+<p><span class="math display">\[b_1 =
+\frac{f(x_1)-f(x_0)}{x_1-x_0}\]</span></p>
+<p><span class="math display">\[b_2 =
+\frac{
+\displaystyle
+\frac{f(x_2)-f(x_1)}{x_2-x_1}
+-
+\frac{f(x_1)-f(x_0)}{x_1-x_0}
+}{
+x_2 - x_0
+}
+\tag{6.2.2-2}\]</span></p>
+<p>또는 분할차분 기호를 사용하면</p>
+<p><span class="math display">\[b_0 = f[x_0]\]</span></p>
+<p><span class="math display">\[b_1 = f[x_0,x_1]\]</span></p>
+<p><span class="math display">\[b_2 = f[x_0,x_1,x_2]
+= \frac{f[x_1,x_2]-f[x_0,x_1]}{x_2-x_0}
+\tag{6.2.2-3}\]</span></p>
+<h4 class="unnumbered" id="분할차분-형태의-일반-표현">3. 분할차분 형태의
+일반 표현</h4>
+<p><span class="math display">\[p_2(x)
+=
+f[x_0]
++ f[x_0,x_1](x-x_0)
++ f[x_0,x_1,x_2](x-x_0)(x-x_1)
+\tag{6.2.2-4}\]</span></p>
+<h4 class="unnumbered" id="특징-1">4. 특징</h4>
+<ul>
+<li><p>주어진 점을 정확히 통과하는 2차 다항식을 구성한다.</p></li>
+<li><p>점이 하나 추가될 때마다 차수가 1 증가한다.</p></li>
+<li><p>분할차분 형태는 고차 보간으로 자연스럽게 확장 가능하다.</p></li>
+</ul>
+<h3 id="newton의-차분divided-difference-n차-보간">Newton의
+차분(divided-difference) <span class="math inline">\(n\)</span>차
+보간</h3>
+<p>Newton 보간은 분할차분을 이용하여 <span
+class="math inline">\(n+1\)</span>개의 점 <span
+class="math inline">\((x_0,f_0), \dots, (x_n,f_n)\)</span>을 지나는
+<span class="math inline">\(n\)</span>차 다항식을 구성하는 방법이다.</p>
+<h4 class="unnumbered" id="고차-분할차분-정의">1. 고차 분할차분
+정의</h4>
+<p><span class="math display">\[f[x_0, x_1, \dots, x_n]
+=
+\frac{
+f[x_1, x_2, \dots, x_n]
+-
+f[x_0, x_1, \dots, x_{n-1}]
+}{
+x_n - x_0
+}
+\tag{6.2.3-1}\]</span></p>
+<p>이 정의를 반복하면 임의 차수까지 확장할 수 있다.</p>
+<h4 class="unnumbered" id="newton-n차-보간-다항식">2. Newton <span
+class="math inline">\(n\)</span>차 보간 다항식</h4>
+<p><span class="math display">\[f(x) = P_n(x)\]</span></p>
+<p><span class="math display">\[P_n(x)
+=
+f[x_0]
++ (x-x_0)f[x_0,x_1]
++ (x-x_0)(x-x_1)f[x_0,x_1,x_2]
++ \cdots\]</span></p>
+<p><span class="math display">\[+ (x-x_0)(x-x_1)\cdots(x-x_{n-1})
+f[x_0,x_1,\dots,x_n]
+\tag{6.2.3-2}\]</span></p>
+<h4 class="unnumbered" id="일반-합-형태">3. 일반 합 형태</h4>
+<p><span class="math display">\[P_n(x)
+=
+\sum_{i=0}^{n}
+f[x_0,x_1,\dots,x_i]
+\prod_{j=0}^{i-1}(x-x_j)
+\tag{6.2.3-3}\]</span></p>
+<h4 class="unnumbered" id="특징-2">4. 특징</h4>
+<ul>
+<li><p>점이 추가되면 새로운 항만 추가하면 된다.</p></li>
+<li><p>고차 보간으로 자연스럽게 확장 가능하다.</p></li>
+<li><p>계산 과정이 체계적이며 수치해석에서 널리 사용된다.</p></li>
+</ul>
+<h3 id="newton의-차분divided-difference-예제">Newton의
+차분(divided-difference) 예제</h3>
+<p>본 예제는 Newton의 분할차분(Newton’s Divided Difference) 방법을
+사용하여 주어진 데이터 점들을 보간하고 결과를 시각화하는 과정을
+다룬다.</p>
+<h4 class="unnumbered" id="데이터-설정">1. 데이터 설정</h4>
+<p><span class="math display">\[x = [0, 1, 2, 3], \qquad
+y = [1, 2, 0, 5]\]</span></p>
+<h4 class="unnumbered" id="분할차분-계산">2. 분할차분 계산</h4>
+<p>주어진 데이터에 대해 분할차분 계수를 계산하여 Newton 보간 다항식의
+계수를 구한다.</p>
+<p>결과 계수: <span class="math display">\[[1.0,\; -1.5,\; 1.1667,\;
+\dots]\]</span></p>
+<h4 class="unnumbered" id="보간-다항식-구성">3. 보간 다항식 구성</h4>
+<p>Newton 보간 다항식은 다음 형태로 구성된다.</p>
+<p><span class="math display">\[P_n(x)
+=
+f[x_0]
++ (x-x_0)f[x_0,x_1]
++ (x-x_0)(x-x_1)f[x_0,x_1,x_2]
++ \cdots\]</span></p>
+<h4 class="unnumbered" id="새로운-점에서의-계산">4. 새로운 점에서의
+계산</h4>
+<p>새로운 입력 값 <span class="math inline">\(x_{\text{new}}\)</span>에
+대해 Newton 다항식을 이용하여 <span
+class="math inline">\(y_{\text{new}}\)</span>를 계산한다.</p>
+<h4 class="unnumbered" id="시각화">5. 시각화</h4>
+<ul>
+<li><p>원래 데이터 점과 보간 다항식을 함께 플롯한다.</p></li>
+<li><p>보간 결과와 실제 점의 차이를 시각적으로 비교한다.</p></li>
+</ul>
+<p><strong>실습예제:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter06/section_06_02_04_newton_divided_difference.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter06/section_06_02_04_newton_divided_difference.py</a></p>
+<div class="sourceCode" id="cb1" data-language="Python"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> divided_diff(x, y):</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="bu">len</span>(y)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    coef <span class="op">=</span> np.zeros((n,n))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    coef[:,<span class="dv">0</span>] <span class="op">=</span> y</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>,n):</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n<span class="op">-</span>j):</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>            coef[i,j] <span class="op">=</span> (coef[i<span class="op">+</span><span class="dv">1</span>,j<span class="op">-</span><span class="dv">1</span>]<span class="op">-</span>coef[i,j<span class="op">-</span><span class="dv">1</span>])<span class="op">/</span>(x[i<span class="op">+</span>j]<span class="op">-</span>x[i])</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> coef[<span class="dv">0</span>,:]</span></code></pre></div>
+<h2 id="lagrange-interpolation-수치-보간">Lagrange Interpolation 수치
+보간</h2>
+<h3 id="lagrange-interpolation-정의">Lagrange Interpolation 정의</h3>
+<p>라그랑주 보간은 주어진 <span class="math inline">\(n+1\)</span>개의
+데이터 점 <span class="math display">\[(x_0,y_0), (x_1,y_1), \dots,
+(x_n,y_n)\]</span> 을 정확히 지나는 보간 다항식 <span
+class="math inline">\(P_n(x)\)</span>을 구성하는 방법이다.</p>
+<h4 class="unnumbered" id="기본-정의">1. 기본 정의</h4>
+<p>기저 다항식(Lagrange basis polynomial) <span
+class="math inline">\(L_i(x)\)</span>는 다음 조건을 만족한다:</p>
+<p><span class="math display">\[L_i(x_j)=
+\begin{cases}
+1 &amp; (i=j) \\
+0 &amp; (i\neq j)
+\end{cases}\]</span></p>
+<p>보간 다항식은</p>
+<p><span class="math display">\[\begin{equation}
+P_n(x)=\sum_{i=0}^{n} y_i L_i(x)
+\end{equation}\]</span></p>
+<p>으로 정의된다.</p>
+<p>기저 다항식의 일반형은</p>
+<p><span class="math display">\[\begin{equation}
+L_i(x)=\prod_{\substack{j=0 \\ j\neq i}}^{n}
+\frac{x-x_j}{x_i-x_j}
+\end{equation}\]</span></p>
+<p>이다.</p>
+<p>—</p>
+<h4 class="unnumbered" id="선형-보간-n1">2. 선형 보간 (n=1)</h4>
+<p>두 점 <span class="math inline">\((x_0,y_0),(x_1,y_1)\)</span>에
+대해</p>
+<p><span class="math display">\[L_0(x)=\frac{x-x_1}{x_0-x_1},
+\qquad
+L_1(x)=\frac{x-x_0}{x_1-x_0}\]</span></p>
+<p>따라서 보간 다항식은</p>
+<p><span class="math display">\[\begin{equation}
+P_1(x)=y_0 L_0(x)+y_1 L_1(x)
+\end{equation}\]</span></p>
+<p>—</p>
+<h4 class="unnumbered" id="차-보간-n2">3. 2차 보간 (n=2)</h4>
+<p>세 점 <span
+class="math inline">\((x_0,y_0),(x_1,y_1),(x_2,y_2)\)</span>에 대해</p>
+<p><span
+class="math display">\[P_2(x)=y_0L_0(x)+y_1L_1(x)+y_2L_2(x)\]</span></p>
+<p>각 기저 다항식은</p>
+<p><span
+class="math display">\[L_0(x)=\frac{(x-x_1)(x-x_2)}{(x_0-x_1)(x_0-x_2)}\]</span></p>
+<p><span
+class="math display">\[L_1(x)=\frac{(x-x_0)(x-x_2)}{(x_1-x_0)(x_1-x_2)}\]</span></p>
+<p><span
+class="math display">\[L_2(x)=\frac{(x-x_0)(x-x_1)}{(x_2-x_0)(x_2-x_1)}\]</span></p>
+<p>—</p>
+<h4 class="unnumbered" id="일반-n차-보간">4. 일반 <span
+class="math inline">\(n\)</span>차 보간</h4>
+<p><span class="math display">\[\begin{equation}
+P_n(x)=\sum_{i=0}^{n} y_i
+\prod_{\substack{j=0 \\ j\neq i}}^{n}
+\frac{x-x_j}{x_i-x_j}
+\end{equation}\]</span></p>
+<p>—</p>
+<h4 class="unnumbered" id="핵심-특징">핵심 특징</h4>
+<ul>
+<li><p>모든 데이터 점을 정확히 통과한다.</p></li>
+<li><p>차수는 데이터 개수보다 1 작다.</p></li>
+<li><p>전역(global) 다항식 보간 방법이다.</p></li>
+<li><p>고차가 되면 Runge 현상이 발생할 수 있다.</p></li>
+</ul>
+<h3 id="lagrange-interpolation-예제">Lagrange Interpolation 예제</h3>
+<p>다음 데이터 점이 주어졌다고 하자.</p>
+<p><span class="math display">\[x = [0,1,2,3], \qquad
+y = [1,2,0,5]\]</span></p>
+<p>즉,</p>
+<p><span class="math display">\[(0,1), \ (1,2), \ (2,0), \
+(3,5)\]</span></p>
+<p>을 모두 지나는 3차 보간 다항식 <span
+class="math inline">\(P_3(x)\)</span>를 구한다.</p>
+<p>—</p>
+<h4 class="unnumbered" id="보간-다항식-공식">1. 보간 다항식 공식</h4>
+<p>라그랑주 보간 다항식은</p>
+<p><span class="math display">\[P_3(x)=\sum_{i=0}^{3} y_i
+L_i(x)\]</span></p>
+<p>여기서</p>
+<p><span class="math display">\[L_i(x)=\prod_{\substack{j=0 \\ j\neq
+i}}^{3}
+\frac{x-x_j}{x_i-x_j}\]</span></p>
+<p>—</p>
+<h4 class="unnumbered" id="각-기저-다항식">2. 각 기저 다항식</h4>
+<p><span class="math display">\[L_0(x)=
+\frac{(x-1)(x-2)(x-3)}
+{(0-1)(0-2)(0-3)}\]</span></p>
+<p><span class="math display">\[L_1(x)=
+\frac{(x-0)(x-2)(x-3)}
+{(1-0)(1-2)(1-3)}\]</span></p>
+<p><span class="math display">\[L_2(x)=
+\frac{(x-0)(x-1)(x-3)}
+{(2-0)(2-1)(2-3)}\]</span></p>
+<p><span class="math display">\[L_3(x)=
+\frac{(x-0)(x-1)(x-2)}
+{(3-0)(3-1)(3-2)}\]</span></p>
+<p>—</p>
+<h4 class="unnumbered" id="최종-보간-다항식">3. 최종 보간 다항식</h4>
+<p><span class="math display">\[P_3(x)=
+1\cdot L_0(x)
++2\cdot L_1(x)
++0\cdot L_2(x)
++5\cdot L_3(x)\]</span></p>
+<p>이를 전개하면 3차 다항식이 된다.</p>
+<p><strong>실습예제:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter06/section_06_03_02_lagrange_interpolation.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter06/section_06_03_02_lagrange_interpolation.py</a></p>
+<div class="sourceCode" id="cb2" data-language="Python"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> lagrange(x_data, y_data, x):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="bu">len</span>(x_data)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        term <span class="op">=</span> y_data[i]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n):</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> j <span class="op">!=</span> i:</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                term <span class="op">*=</span> (x <span class="op">-</span> x_data[j])<span class="op">/</span>(x_data[i]<span class="op">-</span>x_data[j])</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        total <span class="op">+=</span> term</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> total</span></code></pre></div>
+<h2 id="스플라인-보간">스플라인 보간</h2>
+<h3 id="quadratic-spline">Quadratic Spline</h3>
+<p>주어진 데이터 포인트 <span
+class="math inline">\((x_0,y_0),(x_1,y_1),\ldots,(x_n,y_n)\)</span>에서
+2차 스플라인 보간은 각 데이터 점 사이를 2차 다항식으로 연결하여 곡선을
+생성하는 방법이다.</p>
+<p>구간 <span class="math inline">\([x_i,x_{i+1}]\)</span>에 대해 2차
+스플라인은 다음과 같이 정의된다.</p>
+<p><span class="math display">\[\begin{equation}
+S_i(x)=a_i+b_i(x-x_i)+c_i(x-x_i)^2
+\tag{6.4.1-1}
+\end{equation}\]</span></p>
+<h5 id="조건">조건</h5>
+<ol>
+<li><p><strong>데이터 점 통과</strong> <span
+class="math display">\[\begin{align}
+S_i(x_i) &amp;= y_i, \\
+S_i(x_{i+1}) &amp;= y_{i+1}
+\tag{6.4.1-2}
+\end{align}\]</span></p></li>
+<li><p><strong>1차 미분 연속</strong> <span
+class="math display">\[\begin{equation}
+S_i&#39;(x_{i+1}) = S_{i+1}&#39;(x_{i+1})
+\tag{6.4.1-3}
+\end{equation}\]</span></p></li>
+<li><p><strong>자연 경계 조건 (Natural Boundary
+Condition)</strong><br />
+양 끝점에서 2차 도함수가 0이 되도록 설정한다. <span
+class="math display">\[\begin{equation}
+S_0&#39;&#39;(x_0)=S_{n-1}&#39;&#39;(x_n)
+\tag{6.4.1-4}
+\end{equation}\]</span></p></li>
+</ol>
+<p>아래 그림은 Quadratic Spline 보간법을 사용하여 데이터 포인트를
+부드럽게 연결한 결과이다. 데이터 포인트는 초록색 점으로 표시되었으며,
+주황색 곡선이 2차 스플라인 곡선이다. 각 구간에는 <span
+class="math inline">\(a_0,b_0,c_0,\ldots\)</span> 계수가 적용된다.</p>
+<figure data-latex-placement="H">
+<img src="6.4.1_quadratic_spline_connection.png" style="width:70.0%" />
+<figcaption>Quadratic Spline Connection</figcaption>
+</figure>
+<h3 id="quadratic-spline-예제">Quadratic Spline 예제</h3>
+<p>이 코드는 Quadratic Spline Interpolation(2차 스플라인 보간)을
+사용하여 데이터를 부드럽게 연결한 후, 결과를 시각화하는 과정을 보여준다.
+Quadratic Spline은 각 구간을 2차 다항식으로 표현하여 연속적으로 곡선을
+생성한다.</p>
+<p><strong>실습예제:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter06/section_06_04_02_quadratic_spline.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter06/section_06_04_02_quadratic_spline.py</a></p>
+<h3 id="cubic-spline">Cubic Spline</h3>
+<p>주어진 데이터 점 <span class="math inline">\((x_0,y_0), (x_1,y_1),
+\dots, (x_n,y_n)\)</span>에 대해 각 구간 <span
+class="math inline">\([x_i, x_{i+1}]\)</span>에서 3차 다항식으로
+보간한다.</p>
+<p><span class="math display">\[\begin{equation}
+S_i(x) = a_i + b_i(x-x_i) + c_i(x-x_i)^2 + d_i(x-x_i)^3
+\tag{6.4.3-1}
+\end{equation}\]</span></p>
+<p><strong>조건</strong></p>
+<ol>
+<li><p><strong>데이터 점 통과</strong> <span
+class="math display">\[\begin{equation}
+S_i(x_i)=y_i, \quad S_i(x_{i+1})=y_{i+1}
+\tag{6.4.3-2}
+\end{equation}\]</span></p></li>
+<li><p><strong>1차 미분 연속성</strong> <span
+class="math display">\[\begin{equation}
+S_i&#39;(x_{i+1}) = S_{i+1}&#39;(x_{i+1})
+\tag{6.4.3-3}
+\end{equation}\]</span></p></li>
+<li><p><strong>2차 미분 연속성</strong> <span
+class="math display">\[\begin{equation}
+S_i&#39;&#39;(x_{i+1}) = S_{i+1}&#39;&#39;(x_{i+1})
+\tag{6.4.3-4}
+\end{equation}\]</span></p></li>
+<li><p><strong>자연 경계 조건 (Natural Boundary Condition)</strong>
+<span class="math display">\[\begin{equation}
+S_0&#39;&#39;(x_0) = 0, \quad S_{n-1}&#39;&#39;(x_n)=0
+\tag{6.4.3-5}
+\end{equation}\]</span></p></li>
+</ol>
+<h3 id="cubic-spline-예제">Cubic Spline 예제</h3>
+<p>이 예제는 <strong>Cubic Spline Interpolation(3차 스플라인
+보간)</strong>을 사용하여 주어진 데이터 점들을 부드럽게 연결하는 과정을
+보여준다.</p>
+<p>각 구간 <span class="math inline">\([x_i, x_{i+1}]\)</span>에서 3차
+다항식</p>
+<p><span class="math display">\[S_i(x) = a_i + b_i(x-x_i) + c_i(x-x_i)^2
++ d_i(x-x_i)^3\]</span></p>
+<p>을 구성하고,</p>
+<ul>
+<li><p>데이터 점 통과 조건</p></li>
+<li><p>1차 미분 연속 조건</p></li>
+<li><p>2차 미분 연속 조건</p></li>
+<li><p>자연 경계 조건</p></li>
+</ul>
+<p>을 적용하여 계수를 계산한다.</p>
+<p>그 결과, 데이터 점을 정확히 통과하면서 곡선의 기울기와 곡률이 연속인
+<strong>부드러운 자연 곡선(Natural Cubic Spline)</strong>이
+생성된다.</p>
+<p><strong>실습예제:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter06/section_06_04_04_cubic_spline.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter06/section_06_04_04_cubic_spline.py</a></p>
+<h2 id="수치보간법들의-차이점">수치보간법들의 차이점</h2>
+<h3
+id="뉴턴의-분할-차분newtons-divided-difference-method과-라그랑주-보간법lagrange-interpolation의-동일함">뉴턴의
+분할 차분(Newton’s Divided Difference Method)과 라그랑주 보간법(Lagrange
+Interpolation)의 동일함</h3>
+<p>수치 보간에는 대표적으로 뉴턴의 분할 차분법(Newton’s Divided
+Difference Method)과 라그랑주 보간법(Lagrange Interpolation)이 있다. 두
+방법은 표현 방식은 다르지만, 동일한 보간 다항식을 생성한다.</p>
+<h4 class="unnumbered" id="라그랑주-보간-다항식">1. 라그랑주 보간
+다항식</h4>
+<p><span class="math display">\[\begin{equation}
+P_n(x) = \sum_{j=0}^{n} y_j L_j(x)
+\tag{6.5.1-1}
+\end{equation}\]</span></p>
+<p>여기서 라그랑주 기저 다항식은</p>
+<p><span class="math display">\[\begin{equation}
+L_j(x) =
+\prod_{\substack{i=0 \\ i\neq j}}^{n}
+\frac{x - x_i}{x_j - x_i}
+\tag{6.5.1-2}
+\end{equation}\]</span></p>
+<p>이다.</p>
+<p>—</p>
+<h4 class="unnumbered" id="뉴턴-분할-차분-다항식">2. 뉴턴 분할 차분
+다항식</h4>
+<p><span class="math display">\[\begin{equation}
+\begin{aligned}
+P_n(x) &amp;= f[x_0]
++ f[x_0,x_1](x-x_0) \\
+&amp;\quad + f[x_0,x_1,x_2](x-x_0)(x-x_1) \\
+&amp;\quad + \cdots \\
+&amp;\quad + f[x_0,\dots,x_n]
+\prod_{i=0}^{n-1}(x-x_i)
+\end{aligned}
+\tag{6.5.1-3}
+\end{equation}\]</span></p>
+<p>고차 분할 차분 계수는 다음과 같이 정의된다.</p>
+<p><span class="math display">\[\begin{equation}
+f[x_n,\dots,x_0]
+=
+\frac{f[x_n,\dots,x_1]-f[x_{n-1},\dots,x_0]}
+{x_n - x_0}
+\tag{6.5.1-4}
+\end{equation}\]</span></p>
+<p>—</p>
+<h4 class="unnumbered" id="동일성의-핵심-개념">3. 동일성의 핵심
+개념</h4>
+<ol>
+<li><p><strong>뉴턴 다항식의 특징</strong> 점을 하나씩 추가하면서
+점진적으로 차수를 증가시킨다.</p></li>
+<li><p><strong>라그랑주 다항식의 특징</strong> 각 기저 다항식 <span
+class="math inline">\(L_j(x)\)</span>는 <span
+class="math display">\[L_j(x_i) =
+      \begin{cases}
+      1, &amp; i=j \\
+      0, &amp; i\neq j
+      \end{cases}\]</span> 을 만족하도록 구성된다.</p></li>
+<li><p><strong>동일한 보간 다항식 생성</strong> 두 방법은 동일한 데이터
+점 <span class="math inline">\((x_i,y_i)\)</span>을 모두 통과하며,
+결과적으로 동일한 <span class="math inline">\(P_n(x)\)</span>을
+생성한다.</p></li>
+</ol>
+<p><strong>결론:</strong> 뉴턴 분할 차분법과 라그랑주 보간법은 표현
+형식만 다를 뿐, 수학적으로 동일한 보간 다항식을 생성한다.</p>
+<h3 id="cubic-spline이-다른-보간법과-다른-이유">Cubic Spline이 다른
+보간법과 다른 이유</h3>
+<ul>
+<li><p>구간별 다항식 사용</p></li>
+<li><p>고차 다항식의 Runge 현상 방지</p></li>
+<li><p>연속성과 매끄러움 보장</p></li>
+</ul>
+<h3 id="코드-구현">코드 구현</h3>
+<p><strong>실습예제:</strong> <a
+href="https://github.com/seejokim1/NA_with_python/blob/main/chapter06/section_06_05_02_cubic_spline_comparison.py"
+class="uri">https://github.com/seejokim1/NA_with_python/blob/main/chapter06/section_06_05_02_cubic_spline_comparison.py</a></p>
+<h2 id="연습문제">연습문제</h2>
+</body>
+</html>
