@@ -47,14 +47,13 @@ margin-top:60px;
 background:#111;
 color:white;
 text-align:center;
-padding:30px 20px;
-font-size:16px;
-}
-
-footer p{
-margin:6px 0;
+padding:40px;
 }
 
 .visitor-counter{
-margin-top:10px;
+margin-top:12px;
+}
+
+.visitor-counter img{
+margin-top:8px;
 }
