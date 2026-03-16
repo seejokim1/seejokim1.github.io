@@ -8,143 +8,7 @@
 
 <title>Engineering Academy | Prof. See Jo Kim</title>
 
-<style>
-
-/* GLOBAL */
-
-body{
-font-family:Arial, Helvetica, sans-serif;
-margin:0;
-background:#f4f6f9;
-color:#333;
-}
-
-/* HEADER */
-
-header{
-background:#1865F2;
-color:white;
-text-align:center;
-padding:60px 20px;
-}
-
-header h1{
-margin:0;
-font-size:44px;
-}
-
-header p{
-margin-top:10px;
-font-size:18px;
-}
-
-/* NAV */
-
-nav{
-background:white;
-text-align:center;
-padding:15px;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
-}
-
-nav a{
-margin:0 18px;
-text-decoration:none;
-font-weight:bold;
-color:#333;
-}
-
-nav a:hover{
-color:#1865F2;
-}
-
-/* HERO */
-
-.hero{
-text-align:center;
-padding:60px 20px;
-}
-
-.hero h2{
-font-size:32px;
-margin-bottom:10px;
-}
-
-.hero p{
-font-size:18px;
-color:#666;
-}
-
-/* CONTAINER */
-
-.container{
-width:90%;
-max-width:1200px;
-margin:auto;
-}
-
-/* COURSE GRID */
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-gap:30px;
-margin-top:40px;
-}
-
-/* CARD */
-
-.card{
-background:white;
-padding:30px;
-border-radius:12px;
-box-shadow:0 5px 15px rgba(0,0,0,0.1);
-transition:0.25s;
-text-align:center;
-}
-
-.card:hover{
-transform:translateY(-5px);
-}
-
-/* BUTTON */
-
-.button{
-display:inline-block;
-margin-top:15px;
-padding:10px 18px;
-background:#1865F2;
-color:white;
-text-decoration:none;
-border-radius:6px;
-}
-
-/* VIDEO */
-
-.video{
-margin-top:80px;
-text-align:center;
-}
-
-.video-grid{
-display:flex;
-gap:30px;
-justify-content:center;
-flex-wrap:wrap;
-margin-top:20px;
-}
-
-/* FOOTER */
-
-footer{
-margin-top:80px;
-background:#222;
-color:white;
-text-align:center;
-padding:40px;
-}
-
-</style>
+<link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -153,9 +17,7 @@ padding:40px;
 <header>
 
 <h1>Engineering Academy</h1>
-
 <p>Prof. See Jo Kim</p>
-
 <p>Numerical Analysis | CFD | Robotics | AI</p>
 
 </header>
@@ -174,89 +36,82 @@ padding:40px;
 <section class="hero">
 
 <h2>Learn Engineering with Python and Simulation</h2>
-
 <p>Numerical Analysis • CFD • Robotics • AI Engineering</p>
 
 </section>
 
-<div class="container">
+<div class="courses">
 
 <h2 id="courses">Courses</h2>
 
-<div class="grid">
+<div class="course-grid">
 
-<div class="card">
-
+<a class="card" href="numerical-analysis/">
 <h3>Numerical Analysis</h3>
-
 <p>Python-based numerical methods and scientific computing.</p>
+</a>
 
-<a class="button" href="numerical-analysis/">Open Course</a>
-
-</div>
-
-<div class="card">
-
+<a class="card" href="cfd/">
 <h3>Computational Fluid Dynamics</h3>
-
 <p>CFD theory, simulation methods, and practical examples.</p>
+</a>
 
-<a class="button" href="cfd/">Open Course</a>
-
-</div>
-
-<div class="card">
-
+<a class="card" href="robotics/">
 <h3>Robotics</h3>
-
 <p>ROS, autonomous systems, and intelligent robotics.</p>
-
-<a class="button" href="robotics/">Open Course</a>
-
-</div>
+</a>
 
 </div>
 
-<div class="video" id="videos">
+<section id="videos">
 
 <h2>Lecture Videos</h2>
 
 <div class="video-grid">
 
-<iframe width="500" height="280"
+<iframe width="480" height="270"
 src="https://www.youtube.com/embed/25ctQJtZRbg"
 frameborder="0"
-allowfullscreen>
-</iframe>
+allowfullscreen></iframe>
 
-<iframe width="500" height="280"
+<iframe width="480" height="270"
 src="https://www.youtube.com/embed/3hvtFpNsocM"
 frameborder="0"
-allowfullscreen>
-</iframe>
+allowfullscreen></iframe>
 
 </div>
 
-</div>
+</section>
 
 </div>
 
 <footer>
 
-<p>Engineering Academy</p>
+<h3>Engineering Academy</h3>
+
 <p>Prof. See Jo Kim</p>
 
-<div class="visitor-counter">
+<div class="visitor">
 
 <p>Visitors</p>
-
-<img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://seejokim.org" />
+<div id="counter">Loading...</div>
 
 </div>
 
 </footer>
-  
-  
+
+<script>
+
+const namespace = "seejokim-engineering-academy";
+const key = "visits";
+
+fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`)
+.then(res => res.json())
+.then(res => {
+document.getElementById("counter").innerHTML = res.value;
+});
+
+</script>
 
 </body>
 </html>
