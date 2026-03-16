@@ -1,68 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Engineering Academy | Prof. See Jo Kim</title>
-<link rel="stylesheet" href="style.css">
+
+<style>
+
+/* GLOBAL */
+
+body{
+font-family:Arial, Helvetica, sans-serif;
+margin:0;
+background:#f4f6f9;
+color:#333;
+}
+
+/* HEADER */
+
+header{
+background:#1865F2;
+color:white;
+text-align:center;
+padding:60px 20px;
+}
+
+header h1{
+margin:0;
+font-size:44px;
+}
+
+header p{
+margin-top:10px;
+font-size:18px;
+}
+
+/* NAV */
+
+nav{
+background:white;
+text-align:center;
+padding:15px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+nav a{
+margin:0 18px;
+text-decoration:none;
+font-weight:bold;
+color:#333;
+}
+
+nav a:hover{
+color:#1865F2;
+}
+
+/* HERO */
+
+.hero{
+text-align:center;
+padding:60px 20px;
+}
+
+.hero h2{
+font-size:32px;
+margin-bottom:10px;
+}
+
+.hero p{
+font-size:18px;
+color:#666;
+}
+
+/* CONTAINER */
+
+.container{
+width:90%;
+max-width:1200px;
+margin:auto;
+}
+
+/* COURSE GRID */
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:30px;
+margin-top:40px;
+}
+
+/* CARD */
+
+.card{
+background:white;
+padding:30px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+transition:0.25s;
+text-align:center;
+}
+
+.card:hover{
+transform:translateY(-5px);
+}
+
+/* BUTTON */
+
+.button{
+display:inline-block;
+margin-top:15px;
+padding:10px 18px;
+background:#1865F2;
+color:white;
+text-decoration:none;
+border-radius:6px;
+}
+
+/* VIDEO */
+
+.video{
+margin-top:80px;
+text-align:center;
+}
+
+.video-grid{
+display:flex;
+gap:30px;
+justify-content:center;
+flex-wrap:wrap;
+margin-top:20px;
+}
+
+/* FOOTER */
+
+footer{
+margin-top:80px;
+background:#222;
+color:white;
+text-align:center;
+padding:40px;
+}
+
+</style>
+
 </head>
+
 <body>
+
 <header>
+
 <h1>Engineering Academy</h1>
+
 <p>Prof. See Jo Kim</p>
+
 <p>Numerical Analysis | CFD | Robotics | AI</p>
+
 </header>
+
 <nav>
+
 <a href="/">Home</a>
 <a href="#courses">Courses</a>
 <a href="#videos">Lectures</a>
 <a href="https://github.com/seejokim1">GitHub</a>
 <a href="https://scholar.google.com/citations?user=F7zQCZsAAAAJ">Research</a>
 <a href="https://youtube.com/@EngineeringWithProfKim">YouTube</a>
+
 </nav>
+
 <section class="hero">
+
 <h2>Learn Engineering with Python and Simulation</h2>
+
 <p>Numerical Analysis • CFD • Robotics • AI Engineering</p>
+
 </section>
-<div class="courses">
+
+<div class="container">
+
 <h2 id="courses">Courses</h2>
-<div class="course-grid">
-<a class="card" href="numerical-analysis/">
+
+<div class="grid">
+
+<div class="card">
+
 <h3>Numerical Analysis</h3>
+
 <p>Python-based numerical methods and scientific computing.</p>
-</a>
-<a class="card" href="cfd/">
-<h3>Computational Fluid Dynamics</h3>
-<p>CFD theory, simulation methods, and practical examples.</p>
-</a>
-<a class="card" href="robotics/">
-<h3>Robotics</h3>
-<p>ROS, autonomous systems, and intelligent robotics.</p>
-</a>
+
+<a class="button" href="numerical-analysis/">Open Course</a>
+
 </div>
-<section id="videos">
+
+<div class="card">
+
+<h3>Computational Fluid Dynamics</h3>
+
+<p>CFD theory, simulation methods, and practical examples.</p>
+
+<a class="button" href="cfd/">Open Course</a>
+
+</div>
+
+<div class="card">
+
+<h3>Robotics</h3>
+
+<p>ROS, autonomous systems, and intelligent robotics.</p>
+
+<a class="button" href="robotics/">Open Course</a>
+
+</div>
+
+</div>
+
+<div class="video" id="videos">
+
 <h2>Lecture Videos</h2>
+
 <div class="video-grid">
-<iframe width="480" height="270"
+
+<iframe width="500" height="280"
 src="https://www.youtube.com/embed/25ctQJtZRbg"
 frameborder="0"
-allowfullscreen></iframe>
-<iframe width="480" height="270"
+allowfullscreen>
+</iframe>
+
+<iframe width="500" height="280"
 src="https://www.youtube.com/embed/3hvtFpNsocM"
 frameborder="0"
-allowfullscreen></iframe>
+allowfullscreen>
+</iframe>
+
 </div>
-</section>
+
 </div>
+
+</div>
+
 <footer>
-<h3>Engineering Academy</h3>
+
+<p>Engineering Academy</p>
 <p>Prof. See Jo Kim</p>
-<div class="visitor">
+
+<div class="visitor-counter">
+
 <p>Visitors</p>
-<a href="https://hits.seeyoufarm.com">
-<img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fseejokim.org&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Visitors&edge_flat=false"/>
-</a>
+
+<img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://seejokim.org" />
+
 </div>
+
 </footer>
+  
+  
+
 </body>
 </html>
