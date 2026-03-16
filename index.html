@@ -1,117 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Engineering Academy | Prof. See Jo Kim</title>
-
 <link rel="stylesheet" href="style.css">
-
 </head>
-
 <body>
-
 <header>
-
 <h1>Engineering Academy</h1>
 <p>Prof. See Jo Kim</p>
 <p>Numerical Analysis | CFD | Robotics | AI</p>
-
 </header>
-
 <nav>
-
 <a href="/">Home</a>
 <a href="#courses">Courses</a>
 <a href="#videos">Lectures</a>
 <a href="https://github.com/seejokim1">GitHub</a>
 <a href="https://scholar.google.com/citations?user=F7zQCZsAAAAJ">Research</a>
 <a href="https://youtube.com/@EngineeringWithProfKim">YouTube</a>
-
 </nav>
-
 <section class="hero">
-
 <h2>Learn Engineering with Python and Simulation</h2>
 <p>Numerical Analysis • CFD • Robotics • AI Engineering</p>
-
 </section>
-
 <div class="courses">
-
 <h2 id="courses">Courses</h2>
-
 <div class="course-grid">
-
 <a class="card" href="numerical-analysis/">
 <h3>Numerical Analysis</h3>
 <p>Python-based numerical methods and scientific computing.</p>
 </a>
-
 <a class="card" href="cfd/">
 <h3>Computational Fluid Dynamics</h3>
 <p>CFD theory, simulation methods, and practical examples.</p>
 </a>
-
 <a class="card" href="robotics/">
 <h3>Robotics</h3>
 <p>ROS, autonomous systems, and intelligent robotics.</p>
 </a>
-
 </div>
-
 <section id="videos">
-
 <h2>Lecture Videos</h2>
-
 <div class="video-grid">
-
 <iframe width="480" height="270"
 src="https://www.youtube.com/embed/25ctQJtZRbg"
 frameborder="0"
 allowfullscreen></iframe>
-
 <iframe width="480" height="270"
 src="https://www.youtube.com/embed/3hvtFpNsocM"
 frameborder="0"
 allowfullscreen></iframe>
-
 </div>
-
 </section>
-
 </div>
-
 <footer>
-
 <h3>Engineering Academy</h3>
-
 <p>Prof. See Jo Kim</p>
-
 <div class="visitor">
-
 <p>Visitors</p>
-<div id="counter">Loading...</div>
-
+<a href="https://hits.seeyoufarm.com">
+<img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fseejokim.org&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Visitors&edge_flat=false"/>
+</a>
 </div>
-
 </footer>
-
-<script>
-
-const namespace = "seejokim-engineering-academy";
-const key = "visits";
-
-fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`)
-.then(res => res.json())
-.then(res => {
-document.getElementById("counter").innerHTML = res.value;
-});
-
-</script>
-
 </body>
 </html>
